@@ -12,12 +12,15 @@
 		"lint:fix": "eslint . --fix"
 	},
 	"dependencies": {
+		"chroma-js": "^3.2.0",
 		"nuxt": "^4.4.6",
+		"py-datetime": "^0.9.1",
 		"vue": "^3.5.34",
 		"vue-router": "^5.0.7"
 	},
 	"devDependencies": {
 		"@storyblok/nuxt": "^10.1.6",
+		"postcss-custom-media": "^12.0.1",
 		"vite-plugin-mkcert": "^2.0.0"
 	}
 }
