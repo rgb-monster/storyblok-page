@@ -21,18 +21,36 @@
 
         computed: {
             computedItems() {
-                return [
-                    {
+                const showTypes = useState("showTypes").value || [];
+                let items = [];
+
+                if (this.blok.include_video) {
+                    items.push({
                         type: "video",
                         description: `We're a comedy production company that also makes software. We're producing over 20
                                     shows in fringe festivals around the world. You can catch us next at Edinburgh Festival
                                     Fringe in August!`,
                         webm: "https://storage.googleapis.com/rgb-monster-assets/main/sizzle-720.webm",
                         mp4: "https://storage.googleapis.com/rgb-monster-assets/main/sizzle-720.mp4",
-                    },
-                    ...(this.blok?.items || []),
-                ];
+                    });
+                }
+
+                (this.blok.showcase_shows || []).forEach(showId => {
+                    const show = showTypes.find(s => s.id === showId);
+                    if (show) {
+                        items.push({
+                            type: show.meta?.video ? "video" : "image",
+                            description: show.meta?.shortDescription || show.description,
+                            webm: show.meta?.video,
+                            mp4: show.meta?.video,
+                            image: show.meta?.coverImage,
+                        });
+                    }
+                });
+
+                return items;
             },
+
             currentItem: state =>
                 state.computedItems && state.computedItems.length > 0
                     ? state.computedItems[state.currentItemIdx]
@@ -242,6 +260,8 @@
                             </BorderBox>
                         </div>
                     </BorderBox>
+                    -->
+
                     <svg height="0" width="0">
                         <defs>
                             <filter id="stage-title-outline">
@@ -400,6 +420,11 @@
 
             .presenter-screen {
                 height: 40.5cqmin;
+
+                img {
+                    height: 100%;
+                    object-fit: cover;
+                }
             }
 
             .video-box {
