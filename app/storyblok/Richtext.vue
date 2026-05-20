@@ -17,6 +17,7 @@
         p {
             padding-top: 0.5em;
             padding-bottom: 0.5em;
+            line-height: 150%;
 
             &:first-child {
                 padding-top: 0;

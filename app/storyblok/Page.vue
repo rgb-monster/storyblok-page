@@ -13,22 +13,26 @@
         background: var(--background);
         color: var(--foreground);
 
+        --accent-bg: var(--accent-yellow);
+        --accent-fg: var(--dark);
+
         em {
             font-style: normal;
-            color: var(--dark);
-            background: var(--accent-yellow);
+            color: var(--accent-fg);
+            background: var(--accent-bg);
             padding: 0.1em 0.15em;
-            margin-right: 0.25em;
         }
 
         &.pink {
-            --foreground: var(--beige);
+            --foreground: var(--light);
             --background: var(--pink);
         }
 
         &.blue {
             --background: var(--blue);
             --foreground: var(--beige);
+            --accent-bg: var(--accent-pink);
+            --accent-fg: var(--light);
         }
 
         &.brown {
@@ -39,11 +43,15 @@
         &.beige {
             --background: var(--beige);
             --foreground: var(--dark);
+            --accent-fg: var(--light);
+            --accent-bg: var(--dark);
         }
 
         &.yellow {
             --background: var(--yellow);
             --foreground: var(--dark);
+            --accent-fg: var(--yellow);
+            --accent-bg: var(--dark);
         }
 
         &.light {
