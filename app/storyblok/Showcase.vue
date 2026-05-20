@@ -321,7 +321,7 @@
     </div>
     <div
         :style="{background: `hsl(${wallColor[0]}, ${wallColor[1]}%, ${wallColor[2]}%) `}"
-        style="padding-bottom: 4em; margin-top: -2px"
+        style="padding-bottom: 2em; margin-top: -2px"
     >
         <img src="/stage/stage-bottom.webp" />
     </div>
@@ -554,7 +554,7 @@
         .console {
             position: absolute;
             width: 37cqmin;
-            bottom: 3cqmin;
+            bottom: 0;
             right: 1.5cqmin;
         }
 
@@ -577,7 +577,6 @@
 
             .console {
                 width: 46cqmin;
-                bottom: 0;
             }
         }
     }
