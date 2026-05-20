@@ -73,6 +73,20 @@ h2 {
 
 h1 {
     font-size: var(--h1-sizing);
+    color: var(--header-color);
+    font-family: var(--header-font);
+    font-weight: 600;
+
+    .ink-header-contents {
+        color: var(--header-color);
+        font-size: min(2.4em, 6vw);
+        text-transform: uppercase;
+        text-align: center;
+        letter-spacing: 0.025em;
+        line-height: 90%;
+        --dynamic-shadow: min(calc(1px + 0.3vw), 3px);
+        text-shadow: var(--dynamic-shadow) var(--dynamic-shadow) rgba(0, 0, 0, 0.4);
+    }
 }
 
 h2 {

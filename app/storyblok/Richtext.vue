@@ -27,5 +27,22 @@
                 padding-bottom: 0;
             }
         }
+
+        h1,
+        h2 {
+            color: var(--header-color);
+            font-family: var(--header-font);
+            font-weight: 600;
+
+            text-transform: uppercase;
+            text-align: center;
+            letter-spacing: 0.025em;
+            line-height: 90%;
+        }
+
+        h2 {
+            font-size: 1.5em;
+            margin-top: 2em;
+        }
     }
 </style>

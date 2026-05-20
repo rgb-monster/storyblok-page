@@ -43,8 +43,6 @@
         &.beige {
             --background: var(--beige);
             --foreground: var(--dark);
-            --accent-fg: var(--light);
-            --accent-bg: var(--dark);
         }
 
         &.yellow {
