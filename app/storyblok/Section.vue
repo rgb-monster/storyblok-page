@@ -75,7 +75,7 @@
             position: absolute;
             left: 0;
             right: 0;
-            bottom: -20px;
+            bottom: -10px;
             background: var(--background);
             mask-image: url(/new/ink-swipe-bottom.webp);
             mask-size: cover;
