@@ -30,7 +30,7 @@
             position: absolute;
             left: 0;
             right: 0;
-            top: -15px;
+            top: -10px;
             background: var(--dark);
             mask-image: url(/new/ink-swipe-top.webp);
             mask-size: cover;

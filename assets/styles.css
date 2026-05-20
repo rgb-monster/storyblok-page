@@ -13,7 +13,18 @@
     --beige-faint: #f5e6c988;
     --yellow-faint: #fede6388;
 
-    --accent-red: #e54e30;
+    --accent-yellow: #ffd24e;
+    --accent-pink: #ed7dab;
+    --accent-red: #e1391c;
+    --accent-blue: #4f5b97;
+    --accent-green: #65b762;
+    --accent-burgundy: #712529;
+    --accent-yellow-light: #ffd24e;
+    --accent-pink-light: #f1ccdc;
+    --accent-red-light: #e1391c;
+    --accent-blue-light: #4f5b97;
+    --accent-green-light: #65b762;
+    --accent-burgundy-light: #712529;
 
     --chrome: hsl(357, 51%, 19%);
     --chrome-x1: hsl(357, 51%, 24%);

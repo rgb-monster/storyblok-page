@@ -336,7 +336,7 @@
 
         & > div {
             width: 100vw;
-            max-width: min(100vw, 110vh);
+            max-width: min(100vw);
             position: relative;
         }
     }
@@ -416,7 +416,7 @@
             width: 75cqmin;
             margin: 0 auto;
             z-index: 200;
-            margin-bottom: -3cqmin;
+            margin-bottom: -7vh;
 
             .presenter-screen {
                 height: 40.5cqmin;
@@ -467,6 +467,7 @@
 
             .stage {
                 width: 100%;
+                height: 60vh;
             }
         }
 
@@ -474,8 +475,8 @@
             position: absolute;
             width: 40cqmin;
             height: 28.1cqmin;
-            left: 1cqmin;
-            bottom: 0cqmin;
+            right: 60%;
+            bottom: 5vh;
 
             z-index: 100;
             pointer-events: none;
@@ -530,32 +531,36 @@
         .projector-box {
             position: absolute;
             pointer-events: none;
-            bottom: 0cqmin;
+            bottom: 0vh;
             left: 0;
             width: 100%;
             display: grid;
             justify-items: center;
             z-index: 500;
+            top: -15vh;
 
             .projector-beam {
                 width: 20cqmin;
-                top: 0;
+                bottom: 20vh;
                 z-index: 50;
                 margin-bottom: -12cqmin;
+                height: 30vh;
             }
 
             .projector {
+                position: absolute;
                 z-index: 100;
                 width: 100%;
                 width: 15cqmin;
+                bottom: 15vh;
             }
         }
 
         .console {
             position: absolute;
             width: 37cqmin;
-            bottom: 0;
-            right: 1.5cqmin;
+            bottom: 5vh;
+            left: 60%;
         }
 
         @media --break3 {
