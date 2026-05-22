@@ -151,12 +151,11 @@
             display: flex;
             flex-direction: column;
             text-align: left;
+            overflow: hidden;
+            width: 300px;
+            font-size: 0.85em;
 
             --tile-padding: 25px;
-
-            overflow: hidden;
-
-            width: 300px;
 
             & > * {
                 pointer-events: none;
