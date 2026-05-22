@@ -3,13 +3,12 @@ import mkcert from "vite-plugin-mkcert";
 export default defineNuxtConfig({
     compatibilityDate: "2026-01-13",
     devtools: {enabled: false},
-    modules: ["@storyblok/nuxt"],
+    modules: ["@storyblok/nuxt", "@pinia/nuxt"],
 
     storyblok: {
         accessToken: process.env.STORYBLOK_DELIVERY_API_TOKEN,
         apiOptions: {
             region: process.env.STORYBLOK_REGION || "eu",
-
         },
     },
 
