@@ -18,6 +18,7 @@
             dateFrom: state => utils.parseTS((state.blok.date_from || "").split(" ")[0]),
             dateTo: state => utils.parseTS((state.blok.date_to || "").split(" ")[0]),
             city: state => state.blok.city || "",
+            showTypesFilter: state => state.blok.show_types,
             showTypes: state => state.store.showTypesByID,
             shows() {
                 let shows = this.store.allShows;
@@ -26,6 +27,7 @@
                     dateFrom: show => show.date >= this.dateFrom,
                     dateTo: show => show.date <= this.dateTo,
                     city: show => show.venue?.city == this.city,
+                    showTypesFilter: show => this.showTypesFilter.includes(show.type),
                 };
 
                 Object.entries(filters).forEach(([field, filter]) => {
@@ -37,6 +39,8 @@
                 // shows = shows.filter(show =>
                 return shows;
             },
+
+            filterIfPresent: state => "",
 
             byShowType() {
                 // all the shows matching the criteria, grouped by show type
@@ -70,7 +74,6 @@
                     });
                     details.times = utils.sort(Object.values(byTime), ts => ts.time()).map(ts => ts.strftime("%H:%M"));
                 });
-                console.log(res);
                 return res;
             },
         },
@@ -88,18 +91,7 @@
             <template v-for="{details, shows} in byShowType" :key="details.type">
                 <a class="show-type-tile" :class="(details.tags || [])[0]" :href="`/${details.slug}${filterIfPresent}`">
                     <div class="cover-image" v-if="details.coverThumb">
-                        <video
-                            v-if="showHovers && details.hoverVideo"
-                            :src="details.hoverVideo"
-                            v-show="active"
-                            loop
-                            muted
-                            autoplay
-                            playsinline
-                            ref="video"
-                            :poster="details.coverThumb"
-                        />
-                        <img :src="details.coverThumb" v-show="!showHovers || !details.hoverVideo || !active" />
+                        <img :src="details.coverThumb" />
                     </div>
                     <header v-html="details.title" />
 
