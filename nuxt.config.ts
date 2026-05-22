@@ -28,6 +28,12 @@ export default defineNuxtConfig({
         },
     },
 
+    app: {
+        head: {
+            link: [{href: "https://fonts.googleapis.com/icon?family=Material+Icons", rel: "stylesheet"}],
+        },
+    },
+
     ssr: true,
 
     devServer: {

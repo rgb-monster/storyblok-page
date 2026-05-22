@@ -185,7 +185,7 @@ export const useStore = defineStore("shows", {
                         show.date = dt.datetime(show.date - dt.timedelta({days: 1}));
                     }
 
-                    let showMetas = _getShowMetas(this.showTypes[show.show_type], show);
+                    let showMetas = _getShowMetas(this.showTypesByID[show.show_type], show);
 
                     let ticketsURL = showMetas.tickets || "";
                     if (ticketsURL && ticketsURL.includes("tickets.edfringe.com")) {
