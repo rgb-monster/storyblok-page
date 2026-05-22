@@ -1,6 +1,7 @@
 <script>
     import chroma from "chroma-js";
-    import Console from "../widgets/RGBConsole.vue";
+    import Console from "@/widgets/RGBConsole.vue";
+    import {useStore} from "@/shows.js";
 
     export default {
         components: {
@@ -11,6 +12,7 @@
         },
         data() {
             return {
+                store: useStore(),
                 beamColor: "yellow",
                 wallColor: [],
                 outerJags: 0,
@@ -21,9 +23,6 @@
 
         computed: {
             computedItems() {
-                const showTypes = useState("showTypes").value || [];
-                let items = [];
-
                 if (this.blok.include_video) {
                     items.push({
                         type: "video",
@@ -35,15 +34,16 @@
                     });
                 }
 
+                let items = [];
                 (this.blok.showcase_shows || []).forEach(showId => {
-                    const show = showTypes.find(s => s.id === showId);
-                    if (show) {
+                    const showType = this.store.showTypesByID[showId];
+                    if (showType) {
                         items.push({
-                            type: show.meta?.video ? "video" : "image",
-                            description: show.meta?.shortDescription || show.description,
-                            webm: show.meta?.video,
-                            mp4: show.meta?.video,
-                            image: show.meta?.coverImage,
+                            type: showType.video ? "video" : "image",
+                            description: showType.shortDescription || showType.description,
+                            webm: showType.video,
+                            mp4: showType.video,
+                            image: showType.coverImage,
                         });
                     }
                 });
@@ -81,6 +81,7 @@
         },
 
         mounted() {
+            this.store.fetchShowTypes();
             this.updateColor(this.beamColor);
 
             this.resizeObserver = new ResizeObserver(this.onResize);

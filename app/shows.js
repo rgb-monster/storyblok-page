@@ -11,15 +11,17 @@ export const useStore = defineStore("shows", {
         return {
             loaded: false,
             loading: false,
+            loadingShowTypes: false,
             allShows: [], // all shows, including those without any ticket data
-            shows: [],
-            remoteShowTypes: null,
+            shows: null,
+            allShowTypes: null, // includes archived
+            sessionID: Math.round(Math.random() * 999999),
         };
     },
 
     getters: {
         showsSieve() {
-            let shows = this.shows;
+            let shows = this.shows || [];
             let serialized = shows.map(show => {
                 return {
                     id: show.id,
@@ -33,10 +35,10 @@ export const useStore = defineStore("shows", {
             return new Sieve(serialized);
         },
 
-        showTypes() {
+        showsByShowType() {
             // groups shows by type
             let byType = {};
-            this.shows.forEach(show => {
+            (this.shows || []).forEach(show => {
                 if (!byType[show.show_type]) {
                     byType[show.show_type] = {
                         ...show.metas,
@@ -70,65 +72,80 @@ export const useStore = defineStore("shows", {
 
             return byTag;
         },
+
+        activeShowTypes: state => (state.allShowTypes || []).filter(showType => !showType.archived),
+        showTypesByID: state =>
+            Object.fromEntries((state.allShowTypes || []).map(showType => [showType.type, showType])),
     },
 
     actions: {
         async fetchShowTypes() {
-            if (this.remoteShowTypes) {
-                return this.remoteShowTypes;
+            if (this.allShowTypes) {
+                return this.allShowTypes;
             }
 
-            try {
-                let metasSources = [
-                    "https://storage.googleapis.com/confirmed-static-api/rgb-monster/show-types.json",
-                    "https://storage.googleapis.com/confirmed-static-api/rgb-presents/show-types.json",
-                ];
+            if (this.loadingShowTypes) {
+                // we sit here till shows have loaded, otherwise we can't fullfill the request
+                while (this.loadingShowTypes) {
+                    await utils.sleep(0.2);
+                }
+            } else {
+                this.loadingShowTypes = true;
 
-                let allShowTypes = [];
+                try {
+                    let metasSources = [
+                        "https://storage.googleapis.com/confirmed-static-api/rgb-monster/show-types.json",
+                        //"https://storage.googleapis.com/confirmed-static-api/rgb-presents/show-types.json",
+                    ];
 
-                for (let src of metasSources) {
-                    const response = await fetch(`${src}?rnd=${Math.round(Math.random() * 999999)}`, {
-                        credentials: "omit",
-                    });
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                    let allShowTypes = [];
+
+                    for (let src of metasSources) {
+                        const response = await fetch(`${src}?rnd=${this.sessionID}`, {
+                            credentials: "omit",
+                        });
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        let showTypes = await response.json();
+
+                        showTypes = showTypes.map(showType => {
+                            // flatten metas into the main record
+                            let showTypeInfo = {...showType, ...showType.meta};
+                            delete showTypeInfo.meta;
+
+                            showTypeInfo.tags = (showTypeInfo.tags || []).map(tag => tag.tag);
+                            showTypeInfo.slug = showTypeInfo.slug || showTypeInfo.id;
+
+                            // we have bit of an ID confused here
+                            showTypeInfo.type = showTypeInfo.id;
+                            delete showTypeInfo.id;
+
+                            showTypeInfo.overrides = (showTypeInfo.overrides || []).map(rec =>
+                                // filter out empty overrides
+                                Object.fromEntries(Object.entries(rec).filter(([_field, val]) => val))
+                            );
+
+                            // prefer title over the name field
+                            // (title is the override while name is what we have in confirmed by default)
+                            showTypeInfo.title = showTypeInfo.title || showTypeInfo.name;
+                            delete showTypeInfo.name;
+
+                            return showTypeInfo;
+                        });
+
+                        allShowTypes = [...allShowTypes, ...showTypes];
                     }
-                    let showTypes = await response.json();
 
-                    showTypes = showTypes.map(showType => {
-                        // flatten metas into the main record
-                        let showTypeInfo = {...showType, ...showType.meta};
-                        delete showTypeInfo.meta;
-
-                        showTypeInfo.tags = (showTypeInfo.tags || []).map(tag => tag.tag);
-                        showTypeInfo.slug = showTypeInfo.slug || showTypeInfo.id;
-
-                        // we have bit of an ID confused here
-                        showTypeInfo.type = showTypeInfo.id;
-                        delete showTypeInfo.id;
-
-                        showTypeInfo.overrides = (showTypeInfo.overrides || []).map(rec =>
-                            // filter out empty overrides
-                            Object.fromEntries(Object.entries(rec).filter(([_field, val]) => val))
-                        );
-
-                        // prefer title over the name field
-                        // (title is the override while name is what we have in confirmed by default)
-                        showTypeInfo.title = showTypeInfo.title || showTypeInfo.name;
-                        delete showTypeInfo.name;
-
-                        return showTypeInfo;
-                    });
-
-                    allShowTypes = [...allShowTypes, ...showTypes];
+                    this.allShowTypes = allShowTypes;
+                } catch (e) {
+                    this.allShowTypes = [];
+                    console.error(`Failed to fetch remote data: ${e.message}`);
                 }
 
-                this.remoteShowTypes = Object.fromEntries(allShowTypes.map(showType => [showType.type, showType]));
-            } catch (e) {
-                this.remoteShowTypes = console.error(`Failed to fetch remote data: ${e.message}`);
+                this.loadingShowTypes = false;
             }
-
-            return this.remoteShowTypes;
+            return this.allShowTypes;
         },
 
         async fetchShows() {
@@ -137,7 +154,7 @@ export const useStore = defineStore("shows", {
                 while (this.loading) {
                     await utils.sleep(0.2);
                 }
-            } else if (!this.loaded) {
+            } else if (!this.shows) {
                 this.loading = true;
 
                 let sources = [
@@ -168,7 +185,7 @@ export const useStore = defineStore("shows", {
                         show.date = dt.datetime(show.date - dt.timedelta({days: 1}));
                     }
 
-                    let showMetas = _getShowMetas(this.remoteShowTypes[show.show_type], show);
+                    let showMetas = _getShowMetas(this.showTypes[show.show_type], show);
 
                     let ticketsURL = showMetas.tickets || "";
                     if (ticketsURL && ticketsURL.includes("tickets.edfringe.com")) {
@@ -196,7 +213,6 @@ export const useStore = defineStore("shows", {
 
                 // filter shows down to only those that we have tickets for - otherwise we have a listing that's pointing to nothing
                 this.shows = this.shows.filter(show => show.tickets);
-                this.loaded = true;
                 this.loading = false;
             }
 
