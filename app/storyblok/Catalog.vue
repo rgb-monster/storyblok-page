@@ -31,7 +31,7 @@
                 };
 
                 Object.entries(filters).forEach(([field, filter]) => {
-                    if (this[field]) {
+                    if (!utils.isEmpty(this[field])) {
                         shows = shows.filter(filter);
                     }
                 });
