@@ -17,17 +17,22 @@
         computed: {
             dateFrom: state => utils.parseTS((state.blok.date_from || "").split(" ")[0]),
             dateTo: state => utils.parseTS((state.blok.date_to || "").split(" ")[0]),
+            city: state => state.blok.city || "",
             showTypes: state => state.store.showTypesByID,
             shows() {
                 let shows = this.store.allShows;
 
-                if (this.dateFrom) {
-                    shows = shows.filter(show => show.date >= this.dateFrom);
-                }
+                let filters = {
+                    dateFrom: show => show.date >= this.dateFrom,
+                    dateTo: show => show.date <= this.dateTo,
+                    city: show => show.venue?.city == this.city,
+                };
 
-                if (this.dateTo) {
-                    shows = shows.filter(show => show.date <= this.dateTo);
-                }
+                Object.entries(filters).forEach(([field, filter]) => {
+                    if (this[field]) {
+                        shows = shows.filter(filter);
+                    }
+                });
 
                 // shows = shows.filter(show =>
                 return shows;
