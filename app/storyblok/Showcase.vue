@@ -466,7 +466,7 @@
 
             .stage {
                 width: 100%;
-                height: min(60vh, 30em);
+                height: min(60vh, 25em);
             }
         }
 
@@ -475,7 +475,7 @@
             width: 40cqmin;
             height: 28.1cqmin;
             right: 60%;
-            bottom: 5vh;
+            bottom: 0;
 
             z-index: 100;
             pointer-events: none;
@@ -530,7 +530,7 @@
         .projector-box {
             position: absolute;
             pointer-events: none;
-            bottom: 10cqmin;
+            bottom: 1cqmin;
             left: 0;
             width: 40cqmin;
             height: 40cqmin;
@@ -560,7 +560,7 @@
         .console {
             position: absolute;
             width: 37cqmin;
-            bottom: 5vh;
+            bottom: 0;
             left: 60%;
         }
 
