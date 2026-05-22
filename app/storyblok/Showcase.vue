@@ -22,7 +22,9 @@
         },
 
         computed: {
-            computedItems() {
+            showcaseItems() {
+                let items = [];
+
                 if (this.blok.include_video) {
                     items.push({
                         type: "video",
@@ -34,7 +36,6 @@
                     });
                 }
 
-                let items = [];
                 (this.blok.showcase_shows || []).forEach(showId => {
                     const showType = this.store.showTypesByID[showId];
                     if (showType) {
@@ -51,10 +52,7 @@
                 return items;
             },
 
-            currentItem: state =>
-                state.computedItems && state.computedItems.length > 0
-                    ? state.computedItems[state.currentItemIdx]
-                    : null,
+            currentItem: state => (state.showcaseItems || [])[state.currentItemIdx],
         },
 
         methods: {
@@ -67,7 +65,7 @@
             },
             changeItem(direction) {
                 this.currentItemIdx =
-                    (this.currentItemIdx + direction + this.computedItems.length) % this.computedItems.length;
+                    (this.currentItemIdx + direction + this.showcaseItems.length) % this.showcaseItems.length;
             },
 
             onResize() {
@@ -80,13 +78,14 @@
             },
         },
 
-        mounted() {
-            this.store.fetchShowTypes();
+        async mounted() {
             this.updateColor(this.beamColor);
 
             this.resizeObserver = new ResizeObserver(this.onResize);
             this.resizeObserver.observe(document.body);
             this.onResize();
+
+            this.store.fetchShowTypes();
         },
 
         beforeUnmount() {
@@ -98,11 +97,7 @@
 <template>
     <div class="rgb-stage-container" v-editable="blok">
         <BorderBox :jaggedness="outerJags" :radius="0" :horizOnly="true" :style="{'--beam-color': beamColor}">
-            <div
-                class="rgb-stage"
-                :style="{background: `hsl(${wallColor[0]}, ${wallColor[1]}%, ${wallColor[2]}%) `}"
-                v-if="currentItem"
-            >
+            <div class="rgb-stage" :style="{background: `hsl(${wallColor[0]}, ${wallColor[1]}%, ${wallColor[2]}%) `}">
                 <div class="top-fringe" />
                 <img class="curtain left" src="/stage/curtain-left.webp" />
                 <img class="curtain right" src="/stage/curtain-right.webp" />
@@ -251,17 +246,18 @@
                         <div class="video-box">
                             <BorderBox :radius="10">
                                 <div class="presenter-screen">
-                                    <video loop muted autoplay v-if="currentItem.type == 'video'">
-                                        <source :src="currentItem.webm" type="video/webm" v-if="currentItem.webm" />
-                                        <source :src="currentItem.mp4" type="video/mp4" v-if="currentItem.mp4" />
-                                    </video>
+                                    <template v-if="currentItem">
+                                        <video loop muted autoplay v-if="currentItem.type == 'video'">
+                                            <source :src="currentItem.webm" type="video/webm" v-if="currentItem.webm" />
+                                            <source :src="currentItem.mp4" type="video/mp4" v-if="currentItem.mp4" />
+                                        </video>
 
-                                    <img v-else :src="currentItem.image" />
+                                        <img v-else :src="currentItem.image" />
+                                    </template>
                                 </div>
                             </BorderBox>
                         </div>
                     </BorderBox>
-                    -->
 
                     <svg height="0" width="0">
                         <defs>
@@ -299,12 +295,14 @@
                     <div class="laptop-box">
                         <img class="laptop" src="/stage/laptop.webp" />
                         <div class="laptop-screen">
-                            <video loop muted autoplay v-show="currentItem.type == 'video'">
-                                <source :src="currentItem.webm" type="video/webm" v-if="currentItem.webm" />
-                                <source :src="currentItem.mp4" type="video/mp4" v-if="currentItem.mp4" />
-                            </video>
+                            <template v-if="currentItem">
+                                <video loop muted autoplay v-show="currentItem.type == 'video'">
+                                    <source :src="currentItem.webm" type="video/webm" v-if="currentItem.webm" />
+                                    <source :src="currentItem.mp4" type="video/mp4" v-if="currentItem.mp4" />
+                                </video>
 
-                            <img v-show="currentItem.type != 'video'" :src="currentItem.image" />
+                                <img v-show="currentItem.type != 'video'" :src="currentItem.image" />
+                            </template>
                         </div>
                         <button class="laptop-button left" @click="changeItem(-1)" />
                         <button class="laptop-button right" @click="changeItem(1)" />
@@ -468,7 +466,7 @@
 
             .stage {
                 width: 100%;
-                height: 60vh;
+                height: min(60vh, 30em);
             }
         }
 
@@ -532,28 +530,30 @@
         .projector-box {
             position: absolute;
             pointer-events: none;
-            bottom: 0vh;
+            bottom: 10cqmin;
             left: 0;
-            width: 100%;
+            width: 40cqmin;
+            height: 40cqmin;
+
+            left: 50%;
+            margin-left: -20cqmin;
+
             display: grid;
             justify-items: center;
             z-index: 500;
-            top: -15vh;
-
-            .projector-beam {
-                width: 20cqmin;
-                bottom: 20vh;
-                z-index: 50;
-                margin-bottom: -12cqmin;
-                height: 30vh;
-            }
 
             .projector {
                 position: absolute;
                 z-index: 100;
-                width: 100%;
-                width: 15cqmin;
-                bottom: 15vh;
+                width: 35%;
+                bottom: 10%;
+            }
+
+            .projector-beam {
+                position: absolute;
+                z-index: 50;
+                bottom: 70%;
+                width: 50%;
             }
         }
 
