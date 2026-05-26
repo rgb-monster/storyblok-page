@@ -76,6 +76,8 @@ export const useStore = defineStore("shows", {
         activeShowTypes: state => (state.allShowTypes || []).filter(showType => !showType.archived),
         showTypesByID: state =>
             Object.fromEntries((state.allShowTypes || []).map(showType => [showType.type, showType])),
+        showTypesBySlug: state =>
+            Object.fromEntries((state.allShowTypes || []).map(showType => [showType.slug || showType.type, showType])),
     },
 
     actions: {
