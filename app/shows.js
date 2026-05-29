@@ -53,13 +53,7 @@ export const useStore = defineStore("shows", {
                 byType[show.show_type].shows.push(show);
             });
 
-            return utils.sort(
-                Object.values(byType).map(rec => ({
-                    ...rec,
-                    shows: utils.sort(rec.shows, show => show.ts),
-                })),
-                showType => showType.name
-            );
+            return byType;
         },
 
         showsByTag() {
@@ -173,7 +167,7 @@ export const useStore = defineStore("shows", {
                     data = [...data, ...(response.data || [])];
                 }
 
-                this.shows = data.map(show => {
+                let shows = data.map(show => {
                     show.ts = dt.datetime.strptime(show.ts, "%Y-%m-%d %H:%M:%S");
                     if (show.ts_utc) {
                         show.ts_utc = dt.datetime.strptime(show.ts_utc, "%Y-%m-%dT%H:%M:%SZ", true);
@@ -210,11 +204,11 @@ export const useStore = defineStore("shows", {
 
                     return {...show, ...showMetas, metas: showMetas, acts};
                 });
-
-                this.allShows = [...this.shows];
+                shows = utils.sort(shows, rec => rec.ts);
+                this.allShows = shows;
 
                 // filter shows down to only those that we have tickets for - otherwise we have a listing that's pointing to nothing
-                this.shows = this.shows.filter(show => show.tickets);
+                this.shows = shows.filter(show => show.tickets);
                 this.loading = false;
             }
 

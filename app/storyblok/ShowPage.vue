@@ -2,6 +2,7 @@
     import dt from "py-datetime";
 
     import utils from "@/utils.js";
+    import {Sieve} from "@/sieve.js";
     import {useStore} from "@/shows.js";
     import {useRoute} from "vue-router";
 
@@ -22,6 +23,7 @@
                 headerObserver: null,
                 scrollY: 0,
                 activeAct: null,
+                now: dt.datetime.now(),
             };
         },
 
@@ -38,17 +40,50 @@
                 return px;
             },
 
-            metas() {
-                return this.store.showTypesBySlug[this.slug] || {};
-            },
+            metas: state => state.store.showTypesBySlug[state.slug] || {},
             showDescription() {
                 let description = this.metas.description || "";
                 description = description.replace(/\n/g, "<br />");
                 return description;
             },
 
-            showDetails: state => state.store.showsByShowType[state.metas.type] || {},
-            shows: state => state.showDetails.shows || [],
+            showDetails: state => (state.metas?.type ? state.store.showsByShowType[state.metas?.type] || {} : {}),
+
+            showsSieve() {
+                let shows = this.showDetails.shows || [];
+                let serialized = shows.map(show => {
+                    return {
+                        id: show.id,
+                        city: show.venue.city,
+                        venue: show.venue.name,
+                        acts: show.acts.map(act => act.name),
+                        ts: show.ts.strftime("%A %B %d %Y %H:%M").split(" "),
+                        ts_str: show.ts.strftime("%A %b %d %Y %H:%M"),
+                    };
+                });
+                return new Sieve(serialized);
+            },
+            shows() {
+                let shows = this.showDetails.shows || [];
+
+                // node nonsense (window is not defined when generating pages)
+                let windowHandle;
+                try {
+                    windowHandle = window;
+                } catch (error) {
+                    // pass
+                }
+
+                if (windowHandle && windowHandle.location.search) {
+                    let filter = new URLSearchParams(windowHandle.location.search).get("festival");
+                    if (filter) {
+                        let ids = this.showsSieve.filter(filter);
+                        shows = shows.filter(show => ids.includes(show.id));
+                    }
+                }
+
+                return shows;
+            },
             topShow: state => state.shows[0],
 
             dates() {
@@ -67,8 +102,28 @@
             },
 
             upcomingShows() {
-                let now = dt.datetime.now();
-                return this.shows.filter(show => show.ts > now);
+                return this.shows.filter(show => show.ts > this.now);
+            },
+
+            showsByDate() {
+                let byDate = {};
+                this.upcomingShows.forEach(show => {
+                    utils
+                        .setDefault(byDate, show.date.strftime("%Y-%m-%d"), {date: show.date, ts: show.ts, shows: []})
+                        .shows.push(show);
+                });
+
+                return utils.sort(Object.values(byDate), date => date.date);
+            },
+
+            paymentSectionTitle() {
+                let titles = {
+                    ticketed: "Ticketed Show",
+                    "ticketed+pwyw": "Ticketed + PWYW Show",
+                    pwyc: "Pay What You Can",
+                    unticketed: "Unticketed Show",
+                };
+                return titles[this.metas.payment || "ticketed"];
             },
         },
 
@@ -81,7 +136,9 @@
         async mounted() {
             this.headerObserver = new IntersectionObserver(
                 ([evt]) => {
-                    this.$refs.header.classList.toggle("pinned", evt.intersectionRatio < 1);
+                    if (this.$refs.header) {
+                        this.$refs.header.classList.toggle("pinned", evt.intersectionRatio < 1);
+                    }
                 },
                 {threshold: 1}
             );
