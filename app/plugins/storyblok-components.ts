@@ -8,14 +8,13 @@ function kebabCase(str: string): string {
 }
 
 export default defineNuxtPlugin(async nuxtApp => {
-    // Register all components in the storyblok folder
-    let components = import.meta.glob<{default: any}>("~/storyblok/**/*.vue");
+    // Register all components in the storyblok folder, excluding private ones starting with an underscore
+    let components = import.meta.glob<{default: any}>([
+        "~/storyblok/**/*.vue",
+        "!~/storyblok/**/_*.vue",
+    ]);
 
     for (let path in components) {
-        if (path.includes("/_")) {
-            continue; // skip private components
-        }
-
         // Extract path relative to "storyblok/"
         let match = path.match(/\/storyblok\/(.*)\.vue$/);
         if (!match) {
