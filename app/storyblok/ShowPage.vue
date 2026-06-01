@@ -6,18 +6,8 @@
     import {useStore} from "@/shows.js";
     import {useRoute} from "vue-router";
 
-    import Banner from "@/storyblok/showpage/Banner.vue";
-    import Shows from "@/storyblok/showpage/Shows.vue";
-    import AboutTickets from "@/storyblok/showpage/AboutTickets.vue";
-    import VideoPlayer from "@/storyblok/showpage/VideoPlayer.vue";
 
     export default {
-        components: {
-            Banner,
-            Shows,
-            AboutTickets,
-            VideoPlayer,
-        },
         props: {
             blok: Object,
         },

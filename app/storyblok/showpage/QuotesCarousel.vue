@@ -68,11 +68,8 @@
 
 <style lang="css">
     .quotes-carousel {
-        //overflow: hidden;
         font-size: 3em;
         gap: 5px;
-
-        //scroll-behavior: smooth;
 
         .inner {
             position: relative;
@@ -87,7 +84,6 @@
         .author {
             font-size: 0.5em;
             text-align: end;
-            //color: var(--accent-blue);
         }
 
         .quote-container {
