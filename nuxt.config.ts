@@ -68,13 +68,14 @@ window.__PRELOADED_DATA__ = {
 
     hooks: {
         async 'nitro:config'(nitroConfig) {
-            if (!isProduction) {
-                return;
-            }
-    
+            // No longer needed, but keep for reference if debugging dev mode
+            // if (!isProduction) {
+            //     return;
+            // }
+
             const token = process.env.STORYBLOK_DELIVERY_API_TOKEN;
             if (!token) {
-                console.warn('STORYBLOK_DELIVERY_API_TOKEN is not set, skipping route prerendering.');
+                console.warn('[Prerender] STORYBLOK_DELIVERY_API_TOKEN is not set, skipping.');
                 return;
             }
 
@@ -88,27 +89,36 @@ window.__PRELOADED_DATA__ = {
                 while (true) {
                     const response = await fetch(`https://api.storyblok.com/v2/cdn/links?token=${token}&version=${version}&per_page=${perPage}&page=${page}`);
                     if (!response.ok) {
+                        if (response.status === 429) {
+                            console.warn('[Prerender] Rate limit hit, waiting 1 second before retrying...');
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                            continue;
+                        }
                         throw new Error(`Failed to fetch Storyblok links (page ${page}): ${response.statusText}`);
                     }
                     const data = await response.json();
-                    const newRoutes = Object.values(data.links).map(link => link.real_path === '/' ? '/' : `/${link.real_path}`);
-                    routes.push(...newRoutes);
+                    const links = Object.values(data.links);
 
-                    // Break loop if this is the last page
-                    if (routes.length >= data.total) {
+                    // Stop if there are no more links to process
+                    if (links.length === 0) {
                         break;
                     }
+
+                    const newRoutes = links.map(link => link.real_path === '/home' ? '/' : link.real_path);
+                    routes.push(...newRoutes);
+                    
                     page++;
+                    await new Promise(resolve => setTimeout(resolve, 350));
                 }
         
                 // Add routes to prerender
                 nitroConfig.prerender = nitroConfig.prerender || {};
                 nitroConfig.prerender.routes = nitroConfig.prerender.routes || [];
                 nitroConfig.prerender.routes.push(...routes);
-                console.log(`Added ${routes.length} routes from Storyblok to prerender.`);
+                console.log(`[Prerender] Added ${routes.length} total routes from Storyblok to prerender:`, routes);
 
             } catch (e) {
-                console.error('Error fetching Storyblok links for prerendering:', e);
+                console.error('[Prerender] Error fetching Storyblok links:', e);
             }
         }
     },
