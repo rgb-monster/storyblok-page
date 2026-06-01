@@ -49,5 +49,16 @@ export default defineNuxtConfig({
                 savePath: "./.cert",
             }),
         ],
+        build: {
+            rollupOptions: {
+                output: {
+                    manualChunks(id) {
+                        if (id.includes('/app/')) {
+                            return 'app-bundle';
+                        }
+                    },
+                },
+            },
+        },
     },
 });
