@@ -304,8 +304,8 @@
                                 <img v-show="currentItem.type != 'video'" :src="currentItem.image" />
                             </template>
                         </div>
-                        <button class="laptop-button left" @click="changeItem(-1)" />
-                        <button class="laptop-button right" @click="changeItem(1)" />
+                        <button class="laptop-button left" @mousedown="changeItem(-1)" />
+                        <button class="laptop-button right" @mousedown="changeItem(1)" />
                     </div>
 
                     <div class="projector-box">
