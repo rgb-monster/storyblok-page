@@ -1,4 +1,5 @@
 import mkcert from "vite-plugin-mkcert";
+import { isProduction } from "std-env";
 
 export default defineNuxtConfig({
     compatibilityDate: "2026-01-13",
@@ -63,6 +64,53 @@ window.__PRELOADED_DATA__ = {
                 },
             ],
         },
+    },
+
+    hooks: {
+        async 'nitro:config'(nitroConfig) {
+            if (!isProduction) {
+                return;
+            }
+    
+            const token = process.env.STORYBLOK_DELIVERY_API_TOKEN;
+            if (!token) {
+                console.warn('STORYBLOK_DELIVERY_API_TOKEN is not set, skipping route prerendering.');
+                return;
+            }
+
+            const version = 'published';
+            const perPage = 1000;
+            let page = 1;
+            let routes = [];
+            
+            try {
+                // Fetch all links from Storyblok, paginating if necessary
+                while (true) {
+                    const response = await fetch(`https://api.storyblok.com/v2/cdn/links?token=${token}&version=${version}&per_page=${perPage}&page=${page}`);
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch Storyblok links (page ${page}): ${response.statusText}`);
+                    }
+                    const data = await response.json();
+                    const newRoutes = Object.values(data.links).map(link => link.real_path === '/' ? '/' : `/${link.real_path}`);
+                    routes.push(...newRoutes);
+
+                    // Break loop if this is the last page
+                    if (routes.length >= data.total) {
+                        break;
+                    }
+                    page++;
+                }
+        
+                // Add routes to prerender
+                nitroConfig.prerender = nitroConfig.prerender || {};
+                nitroConfig.prerender.routes = nitroConfig.prerender.routes || [];
+                nitroConfig.prerender.routes.push(...routes);
+                console.log(`Added ${routes.length} routes from Storyblok to prerender.`);
+
+            } catch (e) {
+                console.error('Error fetching Storyblok links for prerendering:', e);
+            }
+        }
     },
 
     ssr: true,
