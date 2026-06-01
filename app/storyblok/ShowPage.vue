@@ -6,7 +6,6 @@
     import {useStore} from "@/shows.js";
     import {useRoute} from "vue-router";
 
-
     export default {
         props: {
             blok: Object,
@@ -163,7 +162,7 @@
 
         <template v-if="standard">
             <template v-if="!loading">
-                <Banner :show-details="showDetails" />
+                <component is="showpage-banner" :show-details="showDetails" />
 
                 <section class="title" ref="metaHeader">
                     <main>
@@ -231,22 +230,22 @@
                     <main v-html="showDescription" />
                 </section>
 
-                <VideoPlayer />
+                <component is="showpage-video-player" />
 
                 <section class="social-proof" v-if="metas.quotes">
                     <main>
-                        <QuotesCarousel :quotes="metas.quotes" />
+                        <component is="showpage-quotes-carousel" :quotes="metas.quotes" />
                     </main>
                 </section>
 
                 <template v-if="!loading && upcomingShows.length > 1">
-                    <AboutTickets />
+                    <component is="showpage-about-tickets" />
 
                     <section class="dates" ref="dates">
                         <main>
                             <h2>Upcoming Shows</h2>
 
-                            <Shows :showsByDate="showsByDate" :metas="metas" />
+                            <component is="showpage-shows" :showsByDate="showsByDate" :metas="metas" />
                         </main>
                     </section>
                 </template>

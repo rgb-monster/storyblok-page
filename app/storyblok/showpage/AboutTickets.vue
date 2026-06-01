@@ -1,11 +1,17 @@
 <script>
     import Icon from "@/widgets/global/Icon.vue";
-    import ShowPageComponent from "./_show-page-component.vue";
+    import { useShowPageComposable } from "@/show-page-composable.js";
 
     export default {
-        extends: ShowPageComponent,
         components: {
             Icon,
+        },
+        props: {
+            showDetails: Object,
+        },
+        setup(props) {
+            const { show } = useShowPageComposable(props);
+            return { show };
         },
         computed: {
             paymentSectionTitle() {

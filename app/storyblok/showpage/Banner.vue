@@ -1,8 +1,14 @@
 <script>
-    import ShowPageComponent from "./_show-page-component.vue";
+    import { useShowPageComposable } from "@/show-page-composable.js";
 
     export default {
-        extends: ShowPageComponent,
+        props: {
+            showDetails: Object,
+        },
+        setup(props) {
+            const { show } = useShowPageComposable(props);
+            return { show };
+        },
     };
 </script>
 

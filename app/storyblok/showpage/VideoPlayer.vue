@@ -1,24 +1,26 @@
 <script>
-    import ShowPageComponent from "./_show-page-component.vue";
+    import { useShowPageComposable } from "@/show-page-composable.js";
+    import { ref } from "vue";
 
     export default {
-        extends: ShowPageComponent,
-        data() {
-            return {
-                videoPlaying: false,
-            };
+        props: {
+            showDetails: Object,
         },
-        methods: {
-            togglePlayback() {
-                const video = this.$refs.video;
-                if (video.paused) {
-                    video.play();
-                    this.videoPlaying = true;
+        setup(props) {
+            const { show } = useShowPageComposable(props);
+
+            const videoPlaying = ref(false);
+            const video = ref(null);
+
+            const togglePlayback = () => {
+                if (video.value.paused) {
+                    video.value.play();
                 } else {
-                    video.pause();
-                    this.videoPlaying = false;
+                    video.value.pause();
                 }
-            },
+            };
+
+            return { show, videoPlaying, video, togglePlayback };
         },
     };
 </script>
