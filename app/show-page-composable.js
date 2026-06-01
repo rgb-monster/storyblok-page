@@ -19,10 +19,6 @@ export function useShowPageComposable(props) {
         return show || {};
     });
 
-    onMounted(async () => {
-        await store.fetchShows();
-    });
-
     return {
         show,
     };

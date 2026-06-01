@@ -77,145 +77,98 @@ export const useStore = defineStore("shows", {
     actions: {
         async fetchShowTypes() {
             if (this.allShowTypes) {
-                return this.allShowTypes;
+                return;
             }
 
-            if (this.loadingShowTypes) {
-                // we sit here till shows have loaded, otherwise we can't fullfill the request
-                while (this.loadingShowTypes) {
-                    await utils.sleep(0.2);
-                }
-            } else {
+            const showTypesPromise = _getPreloadedPromise('showTypesPromise');
+            if (showTypesPromise) {
                 this.loadingShowTypes = true;
-
                 try {
-                    let metasSources = [
-                        "https://storage.googleapis.com/confirmed-static-api/rgb-monster/show-types.json",
-                        //"https://storage.googleapis.com/confirmed-static-api/rgb-presents/show-types.json",
-                    ];
-
-                    let allShowTypes = [];
-
-                    for (let src of metasSources) {
-                        const response = await fetch(`${src}?rnd=${this.sessionID}`, {
-                            credentials: "omit",
-                        });
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-                        let showTypes = await response.json();
-
-                        showTypes = showTypes.map(showType => {
-                            // flatten metas into the main record
-                            let showTypeInfo = {...showType, ...showType.meta};
-                            delete showTypeInfo.meta;
-
-                            showTypeInfo.tags = (showTypeInfo.tags || []).map(tag => tag.tag);
-                            showTypeInfo.slug = showTypeInfo.slug || showTypeInfo.id;
-
-                            // we have bit of an ID confused here
-                            showTypeInfo.type = showTypeInfo.id;
-                            delete showTypeInfo.id;
-
-                            showTypeInfo.overrides = (showTypeInfo.overrides || []).map(rec =>
-                                // filter out empty overrides
-                                Object.fromEntries(Object.entries(rec).filter(([_field, val]) => val))
-                            );
-
-                            // prefer title over the name field
-                            // (title is the override while name is what we have in confirmed by default)
-                            showTypeInfo.title = showTypeInfo.title || showTypeInfo.name;
-                            delete showTypeInfo.name;
-
-                            return showTypeInfo;
-                        });
-
-                        allShowTypes = [...allShowTypes, ...showTypes];
+                    let showTypes = await showTypesPromise;
+                    if (typeof window !== 'undefined' && window.__PRELOADED_DATA__) {
+                        delete window.__PRELOADED_DATA__.showTypesPromise; // Clean up
                     }
 
-                    this.allShowTypes = allShowTypes;
+                    showTypes = showTypes.map(showType => {
+                        // flatten metas into the main record
+                        let showTypeInfo = {...showType, ...showType.meta};
+                        delete showTypeInfo.meta;
+                        showTypeInfo.tags = (showTypeInfo.tags || []).map(tag => tag.tag);
+                        showTypeInfo.slug = showTypeInfo.slug || showTypeInfo.id;
+                        showTypeInfo.type = showTypeInfo.id;
+                        delete showTypeInfo.id;
+                        showTypeInfo.overrides = (showTypeInfo.overrides || []).map(rec =>
+                            Object.fromEntries(Object.entries(rec).filter(([_field, val]) => val))
+                        );
+                        showTypeInfo.title = showTypeInfo.title || showTypeInfo.name;
+                        delete showTypeInfo.name;
+                        return showTypeInfo;
+                    });
+
+                    this.allShowTypes = showTypes;
                 } catch (e) {
                     this.allShowTypes = [];
-                    console.error(`Failed to fetch remote data: ${e.message}`);
+                    console.error('Failed to resolve preloaded show types:', e);
                 }
-
                 this.loadingShowTypes = false;
             }
-            return this.allShowTypes;
         },
 
         async fetchShows() {
-            if (this.loading) {
-                // we sit here till shows have loaded, otherwise we can't fullfill the request
-                while (this.loading) {
-                    await utils.sleep(0.2);
-                }
-            } else if (!this.shows) {
-                this.loading = true;
-
-                let sources = [
-                    "https://confirmed.show/api/v1/rgb-monster/shows.json?future_shows_limit=360",
-                    // "https://confirmed.show/api/v1/rgb-presents/shows.json",
-                    // "https://confirmed.show/api/v1/bowtie/shows.json",
-                ];
-
-                await this.fetchShowTypes();
-
-                let data = [];
-                for (let source of sources) {
-                    let response = await axios.get(source);
-                    data = [...data, ...(response.data || [])];
-                }
-
-                let shows = data.map(show => {
-                    show.ts = dt.datetime.strptime(show.ts, "%Y-%m-%d %H:%M:%S");
-                    if (show.ts_utc) {
-                        show.ts_utc = dt.datetime.strptime(show.ts_utc, "%Y-%m-%dT%H:%M:%SZ", true);
-                    } else {
-                        show.ts_utc = show.ts; // in absence of ts_utc (meaning we don't have a timezone, use ts as tsutc)
-                    }
-
-                    show.date = dt.datetime.combine(show.ts, dt.time());
-
-                    if (show.ts.hour <= 5) {
-                        show.date = dt.datetime(show.date - dt.timedelta({days: 1}));
-                    }
-
-                    let showMetas = _getShowMetas(this.showTypesByID[show.show_type], show);
-
-                    let ticketsURL = showMetas.tickets || "";
-                    if (ticketsURL && ticketsURL.includes("tickets.edfringe.com")) {
-                        // fringe has brokeneth the ability to deep-link
-                        // ticketsURL = `${ticketsURL}?day=${show.date.strftime("%d-%m-%Y")}`;
-                        // TODO - i could bring this brain into metas on confirmed if anyone resumes deep-linking
-                        // showMetas.tickets = ticketsURL;
-                    }
-
-                    // name -> title (we have both of them and that then becomes awfully confusing)
-                    // we want to use the showMetas one where available as that allows overriding act/production-facing
-                    // title for cosmetic reasons
-                    show.title = showMetas.title || show.name;
-                    delete show.name;
-
-                    let acts = show.acts;
-                    if (show.total_act_spots > acts.length) {
-                        acts.push({empty: true, count: show.total_act_spots - acts.length});
-                    }
-
-                    return {...show, ...showMetas, metas: showMetas, acts};
-                });
-                shows = utils.sort(shows, rec => rec.ts);
-                this.allShows = shows;
-
-                // filter shows down to only those that we have tickets for - otherwise we have a listing that's pointing to nothing
-                this.shows = shows.filter(show => show.tickets);
-                this.loading = false;
+            if (this.shows) {
+                return;
             }
 
-            return this.shows;
+            await this.fetchShowTypes();
+
+            const showsPromise = _getPreloadedPromise('showsPromise');
+            if (showsPromise) {
+                this.loading = true;
+                try {
+                    let data = await showsPromise;
+                    if (typeof window !== 'undefined' && window.__PRELOADED_DATA__) {
+                        delete window.__PRELOADED_DATA__.showsPromise; // Clean up
+                    }
+
+                    let shows = data.map(show => {
+                        show.ts = dt.datetime.strptime(show.ts, "%Y-%m-%d %H:%M:%S");
+                        if (show.ts_utc) {
+                            show.ts_utc = dt.datetime.strptime(show.ts_utc, "%Y-%m-%dT%H:%M:%SZ", true);
+                        } else {
+                            show.ts_utc = show.ts;
+                        }
+                        show.date = dt.datetime.combine(show.ts, dt.time());
+                        if (show.ts.hour <= 5) {
+                            show.date = dt.datetime(show.date - dt.timedelta({days: 1}));
+                        }
+                        let showMetas = _getShowMetas(this.showTypesByID[show.show_type], show);
+                        show.title = showMetas.title || show.name;
+                        delete show.name;
+                        let acts = show.acts;
+                        if (show.total_act_spots > acts.length) {
+                            acts.push({empty: true, count: show.total_act_spots - acts.length});
+                        }
+                        return {...show, ...showMetas, metas: showMetas, acts};
+                    });
+                    shows = utils.sort(shows, rec => rec.ts);
+                    this.allShows = shows;
+                    this.shows = shows.filter(show => show.tickets);
+                } catch (e) {
+                    this.shows = [];
+                    console.error('Failed to resolve preloaded shows:', e);
+                }
+                this.loading = false;
+            }
         },
     },
 });
+
+function _getPreloadedPromise(key) {
+    if (typeof window !== 'undefined' && window.__PRELOADED_DATA__) {
+        return window.__PRELOADED_DATA__[key];
+    }
+    return null;
+}
 
 function _getShowMetas(metas, show) {
     metas = JSON.parse(JSON.stringify(metas || {}));
