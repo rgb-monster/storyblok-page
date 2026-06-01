@@ -6,11 +6,17 @@
     import {useStore} from "@/shows.js";
     import {useRoute} from "vue-router";
 
-    import Banner from "@/storyblok/Banner.vue";
+    import Banner from "@/storyblok/showpage/Banner.vue";
+    import Shows from "@/storyblok/showpage/Shows.vue";
+    import AboutTickets from "@/storyblok/showpage/AboutTickets.vue";
+    import VideoPlayer from "@/storyblok/showpage/VideoPlayer.vue";
 
     export default {
         components: {
             Banner,
+            Shows,
+            AboutTickets,
+            VideoPlayer,
         },
         props: {
             blok: Object,
@@ -19,17 +25,15 @@
             return {
                 store: useStore(),
                 route: useRoute(),
-                videoPlaying: false,
                 headerObserver: null,
                 scrollY: 0,
-                activeAct: null,
                 now: dt.datetime.now(),
             };
         },
 
         computed: {
             standard: state => [undefined, true].includes(state.blok.standard_structure),
-            slug: state => state.route.params.slug[1], // we shall assume /shows/<showtype> structure
+            slug: state => state.route.params.slug[0], // we shall assume /shows/<showtype> structure
             theme: state => state.blok.colour || "beige",
             curtains: state => !state.blok.hide_curtains,
             loading: state => state.store.loading,
@@ -115,16 +119,6 @@
 
                 return utils.sort(Object.values(byDate), date => date.date);
             },
-
-            paymentSectionTitle() {
-                let titles = {
-                    ticketed: "Ticketed Show",
-                    "ticketed+pwyw": "Ticketed + PWYW Show",
-                    pwyc: "Pay What You Can",
-                    unticketed: "Unticketed Show",
-                };
-                return titles[this.metas.payment || "ticketed"];
-            },
         },
 
         methods: {
@@ -147,7 +141,10 @@
 
             await this.$nextTick();
 
-            this.headerObserver.observe(this.$refs.metaHeader);
+            if (this.standard) {
+                this.headerObserver.observe(this.$refs.metaHeader);
+            }
+
             document.addEventListener("scroll", this.updateScrollPos);
 
             if (document.location.hash) {
@@ -176,7 +173,7 @@
 
         <template v-if="standard">
             <template v-if="!loading">
-                <Banner :blok="{show_type: metas.type}" />
+                <Banner :show-details="showDetails" />
 
                 <section class="title" ref="metaHeader">
                     <main>
@@ -244,18 +241,7 @@
                     <main v-html="showDescription" />
                 </section>
 
-                <section v-if="metas.squareVideo" class="video">
-                    <main>
-                        <button class="player" :class="{playing: videoPlaying}" @click="togglePlayback">
-                            <video playsinline ref="video">
-                                <source :src="metas.squareVideo" type="video/mp4" />
-                            </video>
-                            <div class="play-controls">
-                                <div class="play-icon"><Icon name="play_arrow" /></div>
-                            </div>
-                        </button>
-                    </main>
-                </section>
+                <VideoPlayer />
 
                 <section class="social-proof" v-if="metas.quotes">
                     <main>
@@ -264,260 +250,13 @@
                 </section>
 
                 <template v-if="!loading && upcomingShows.length > 1">
-                    <section class="about-tickets">
-                        <main>
-                            <div class="monster-box">
-                                <img class="monster" src="/doodles/sticking-out.webp" />
-                            </div>
-
-                            <div class="box" v-if="metas.payment != 'hide'">
-                                <header class="flexer">
-                                    <Icon name="confirmation_number" />{{ paymentSectionTitle }}
-                                </header>
-
-                                <div v-if="(metas.payment || 'ticketed') == 'ticketed'">
-                                    This is a ticketed show. This means that unlike some other shows that we produce
-                                    where you may nominate a price you can afford, you may only enter this show with a
-                                    ticket.
-                                </div>
-
-                                <div v-if="metas.payment == 'ticketed+pwyw'">
-                                    This is a ticketed show. This means that the only way to guarantee entry is with a
-                                    ticket. If you are low income, unwaged, or you can't afford a full price ticket for
-                                    any reason, you are welcome to buy a concession ticket on a trust basis. If there is
-                                    spare capacity once the ticket holders have been admitted, the venue may at their
-                                    discression admit non-ticket holders on a pay what you can basis, where you will be
-                                    able to purchase your ticket at a price of your choosing at the end of the show.
-                                </div>
-
-                                <div v-if="metas.payment == 'pwyc'">
-                                    This is a Pay What You Can Show. There are two ways of paying for the show. You can
-                                    either reserve a ticket in advance for the full price, or select a reduced price
-                                    option if that's all you can afford. Or, providing there is spare capacity once
-                                    we've let the ticket holders in, you can turn up to the venue and enter for free,
-                                    and offer a cash or card donation at the end of the show. We recommend doing this
-                                    during the mid-week performances where we are less likely to sell out.
-                                </div>
-
-                                <div v-if="metas.payment == 'unticketed'">
-                                    This is a free show! This means that there is no way of reserving your place in
-                                    advance. Instead, to be fair to everyone, we let people in the venue on a first
-                                    come, first served basis, so we recommend turning up around fifteen minutes before
-                                    the show starts. We ask that you pay what you feel the show was worth at the end of
-                                    the show. The typical donation is £12, but some people pay more or less than this
-                                    depending on their personal circumstances. Because of this crowdfunding model, even
-                                    if you can't afford to pay anything at all, we still hope that you'll come and enjoy
-                                    the show, since your fellow audience members will be paying for you. It really is
-                                    free for you.
-                                </div>
-                            </div>
-                        </main>
-                    </section>
+                    <AboutTickets />
 
                     <section class="dates" ref="dates">
                         <main>
                             <h2>Upcoming Shows</h2>
 
-                            <div class="date-listing">
-                                <div v-for="date in showsByDate" :key="date.date">
-                                    <a
-                                        :id="date.date.strftime('%Y_%m_%d')"
-                                        :href="`#${date.date.strftime('%Y_%m_%d')}`"
-                                        class="date-anchor"
-                                    >
-                                        <h2>{{ date.date.strftime("%A") }}, {{ humanDate(date.date) }}</h2>
-                                    </a>
-                                    <div class="shows">
-                                        <template v-for="show in date.shows">
-                                            <a
-                                                class="show-tile"
-                                                :href="show.tickets"
-                                                target="blank"
-                                                v-if="!metas.show_lineup"
-                                            >
-                                                <div class="time">
-                                                    {{ show.ts.strftime("%H:%M") }}
-
-                                                    <Icon
-                                                        name="nights_stay"
-                                                        class="late-night-icon"
-                                                        v-if="show.ts.hour <= 5"
-                                                    />
-                                                </div>
-                                                <div class="late-night-disclaimer" v-if="show.ts.hour <= 5">
-                                                    Note: this show happens on {{ show.date.strftime("%A") }} night
-                                                    (technically, {{ show.ts.strftime("%A") }} morning).
-                                                </div>
-
-                                                <div class="venue">{{ show.venue.name }}</div>
-                                                <div
-                                                    class="tickets flexer"
-                                                    v-if="
-                                                        show.tickets_available !== undefined &&
-                                                        show.tickets_available < 20
-                                                    "
-                                                    :class="{
-                                                        'running-low':
-                                                            show.tickets_available <= 20 && show.tickets_available > 10,
-                                                        'last-few': show.tickets_available <= 10,
-                                                        'sold-out': show.tickets_available <= 0,
-                                                    }"
-                                                >
-                                                    <Icon name="confirmation_number" />
-                                                    <template
-                                                        v-if="
-                                                            show.tickets_available <= 20 && show.tickets_available > 10
-                                                        "
-                                                    >
-                                                        Running Low
-                                                    </template>
-                                                    <template v-else-if="show.tickets_available > 0">
-                                                        Last few left
-                                                    </template>
-                                                    <template v-else-if="show.tickets_available <= 0">
-                                                        Sold out
-                                                    </template>
-                                                </div>
-
-                                                <div
-                                                    class="action"
-                                                    v-if="
-                                                        show.tickets_available === undefined ||
-                                                        show.tickets_available > 0
-                                                    "
-                                                >
-                                                    {{ metas.payment == "unticketed" ? "More Details" : "Get tickets" }}
-                                                </div>
-                                            </a>
-
-                                            <div class="show-tile" v-if="metas.show_lineup">
-                                                <div class="time">
-                                                    {{ show.ts.strftime("%H:%M") }}
-
-                                                    <Icon
-                                                        name="nights_stay"
-                                                        class="late-night-icon"
-                                                        v-if="show.ts.hour <= 5"
-                                                    />
-                                                </div>
-                                                <div class="late-night-disclaimer" v-if="show.ts.hour <= 5">
-                                                    Note: this show happens on {{ show.date.strftime("%A") }} night
-                                                    (technically, {{ show.ts.strftime("%A") }} morning).
-                                                </div>
-
-                                                <div class="venue">{{ show.venue.name }}</div>
-                                                <div
-                                                    class="tickets flexer"
-                                                    v-if="
-                                                        show.tickets_available !== undefined &&
-                                                        show.tickets_available < 20
-                                                    "
-                                                    :class="{
-                                                        'running-low':
-                                                            show.tickets_available <= 20 && show.tickets_available > 10,
-                                                        'last-few': show.tickets_available <= 10,
-                                                        'sold-out': show.tickets_available == 0,
-                                                    }"
-                                                >
-                                                    <Icon name="confirmation_number" />
-                                                    <template
-                                                        v-if="
-                                                            show.tickets_available <= 20 && show.tickets_available > 10
-                                                        "
-                                                    >
-                                                        Running Low
-                                                    </template>
-                                                    <template v-else-if="show.tickets_available > 0">
-                                                        Last few left
-                                                    </template>
-                                                    <template v-else-if="show.tickets_available == 0">
-                                                        Sold out
-                                                    </template>
-                                                </div>
-
-                                                <div class="lineup" v-if="metas.show_lineup">
-                                                    <div class="headshots">
-                                                        <template v-if="show.acts.length > show.total_act_spots / 2">
-                                                            <template v-if="metas.show_hosts">
-                                                                <button
-                                                                    v-for="(act, idx) in show.hosts"
-                                                                    :key="idx"
-                                                                    @click="toggleAct(act)"
-                                                                    class="headshot-container"
-                                                                    :class="{
-                                                                        active: act == activeAct,
-                                                                        faded: activeAct && act !== activeAct,
-                                                                    }"
-                                                                    :title="act.name"
-                                                                >
-                                                                    <div class="overlay" />
-                                                                    <Headshot :act="act" />
-                                                                </button>
-
-                                                                <div class="spacer" />
-                                                            </template>
-
-                                                            <button
-                                                                v-for="(act, idx) in show.acts"
-                                                                :key="idx"
-                                                                @click="toggleAct(act)"
-                                                                class="headshot-container"
-                                                                :class="{
-                                                                    active: act == activeAct,
-                                                                    faded: activeAct && act !== activeAct,
-                                                                }"
-                                                                :title="act.name"
-                                                            >
-                                                                <div class="overlay" />
-
-                                                                <div class="headshot" v-if="act.empty">
-                                                                    +{{ act.count }}
-                                                                </div>
-                                                                <Headshot v-else :act="act" />
-                                                            </button>
-                                                        </template>
-                                                        <template v-else> Lineup to be revealed! </template>
-                                                    </div>
-
-                                                    <div
-                                                        v-if="
-                                                            (activeAct && show.acts.includes(activeAct)) ||
-                                                            show.hosts.includes(activeAct)
-                                                        "
-                                                        class="act-details"
-                                                    >
-                                                        <template v-if="activeAct.empty">
-                                                            <div class="bio">
-                                                                Plus {{ ordinal(activeAct.count) }} more
-                                                                {{ pluralizeNoun(activeAct.count, "act", "acts") }} to
-                                                                be revealed!
-                                                            </div>
-                                                        </template>
-                                                        <template v-else>
-                                                            <div class="act-name">{{ activeAct.name }}</div>
-                                                            <div class="bio" v-if="!metas.hide_bio">
-                                                                {{ activeAct.bio }}
-                                                            </div>
-                                                        </template>
-                                                    </div>
-                                                </div>
-
-                                                <a
-                                                    :href="show.tickets"
-                                                    target="blank"
-                                                    class="action"
-                                                    v-if="
-                                                        show.tickets_available === undefined ||
-                                                        show.tickets_available > 0
-                                                    "
-                                                >
-                                                    {{ metas.payment == "unticketed" ? "More Details" : "Get tickets" }}
-                                                </a>
-                                            </div>
-                                        </template>
-                                    </div>
-                                </div>
-                            </div>
+                            <Shows :showsByDate="showsByDate" :metas="metas" />
                         </main>
                     </section>
                 </template>
@@ -533,6 +272,7 @@
         padding-bottom: 3em;
         margin: 0 auto;
         --square-size: 60px;
+        --within-curtains: min(1000px, 55vw);
 
         .cover {
             transition: all 300ms;
@@ -570,15 +310,6 @@
             &.hidden {
                 right: -500px;
             }
-        }
-
-        .late-night-icon {
-            color: var(--accent-pink);
-        }
-
-        .late-night-disclaimer {
-            color: var(--accent-pink);
-            font-size: 0.85em;
         }
 
         .sticky-header {
@@ -629,76 +360,20 @@
             }
         }
 
-        .lineup {
-            .headshots {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 10px;
-                align-items: center;
-                justify-items: center;
-
-                .spacer {
-                    width: 15px;
-                }
-            }
-            .headshot-container {
-                position: relative;
-                margin-right: -30px;
-
-                &:last-child {
-                    margin-right: 0;
-                }
-
-                .headshot,
-                .overlay {
-                    width: 80px;
-                    height: 80px;
-                    border-radius: 50%;
-                    border: 3px solid #fff;
-                }
-
-                .overlay {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    background: #fff;
-                    pointer-events: none;
-                    opacity: 0;
-                    transition: opacity 300ms ease;
-                }
-
-                &.active {
-                    z-index: 300;
-                    .headshot {
-                        border: 3px solid #fff;
-                        box-shadow: 0 0 5px 2px #fff;
-                    }
-                }
-                &.faded {
-                    .overlay {
-                        opacity: 0.6;
-                    }
-                }
-            }
-
-            .act-details {
-                margin-top: 10px;
-                .act-name {
-                    font-weight: 600;
-                    font-size: 1.2em;
-                }
-
-                .bio {
-                    padding: 5px 0;
-                    max-width: 30em;
-                    line-height: 150%;
-                }
-            }
+        main {
+            text-align: center;
         }
 
-        section.title .contents {
+        section.title {
+            text-align: center;
+            main {
+                max-width: var(--within-curtains);
+                padding-bottom: 0;
+            }
+
             h1 {
                 line-height: 100%;
+                margin-bottom: 0;
             }
 
             .partnership {
@@ -715,6 +390,10 @@
 
         section.meta {
             padding-top: 0;
+
+            main {
+                padding-bottom: 0;
+            }
 
             .location {
                 font-family: var(--rgb-font);
@@ -831,207 +510,6 @@
         section.show-description {
             line-height: 1.8;
             font-size: 1.25em;
-        }
-
-        section.about-tickets {
-            font-size: 1.25em;
-            line-height: 180%;
-
-            padding-top: 3em;
-
-            .contents {
-                position: relative;
-            }
-
-            .monster-box {
-                display: flex;
-                justify-content: end;
-
-                .monster {
-                    max-width: 150px;
-                    z-index: 50;
-                }
-            }
-
-            .box {
-                z-index: 100;
-                padding: 20px;
-                background: #fff;
-
-                border: 5px solid var(--chrome-x2);
-                border-radius: 15px;
-
-                box-shadow: 5px 5px var(--transparent-shadow);
-
-                header {
-                    color: var(--chrome-x2);
-                    font-size: 1.25em;
-                    margin-bottom: 15px;
-                }
-            }
-
-            header,
-            .contents {
-                text-align: left;
-            }
-
-            header {
-                font-weight: 600;
-            }
-        }
-
-        section.dates {
-            margin: 2em 0;
-
-            .date-listing {
-                display: grid;
-
-                gap: 1em;
-
-                margin-top: 1em;
-                text-align: left;
-
-                .date-anchor {
-                    display: block;
-                    color: var(--chrome);
-                    border-bottom: 2px solid var(--chrome);
-                    text-align: left;
-                    padding: 5px;
-                    text-transform: uppercase;
-                    margin-top: 1em;
-                }
-
-                .shows {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 10px;
-                    margin-top: 10px;
-                }
-
-                .show-tile {
-                    background: #fff;
-                    display: inline-block;
-                    padding: 10px;
-                    border-radius: 10px;
-                    border: 1px solid var(--shadow);
-                    transition:
-                        background 300ms ease,
-                        color 300ms ease;
-
-                    min-width: 14em;
-
-                    display: grid;
-                    justify-items: start;
-                    gap: 5px;
-
-                    .time {
-                        font-weight: 600;
-                        font-size: 2em;
-                    }
-
-                    .action {
-                        color: var(--chrome-x1);
-                        border-radius: 5px;
-                        padding: 8px;
-                        background: var(--chrome-x1);
-                        color: var(--chrome-text);
-                        font-weight: 600;
-                        cursor: pointer;
-                        margin-top: 5px;
-                    }
-
-                    .tickets {
-                        &.available {
-                            color: var(--accent-green);
-                        }
-
-                        &.running-low {
-                            color: var(--accent-burgundy);
-                        }
-
-                        &.last-few {
-                            color: var(--accent-red);
-                        }
-
-                        &.sold-out {
-                            color: var(--label);
-                        }
-                    }
-                }
-
-                a.show-tile:hover {
-                    background: var(--chrome);
-                    color: var(--chrome-text);
-
-                    .action {
-                        background: var(--chrome);
-                    }
-                }
-
-                div.show-tile {
-                    a.action {
-                        padding: 15px 20px;
-                    }
-
-                    .active-act {
-                        .headshot {
-                            z-index: 300;
-                        }
-                    }
-                }
-            }
-        }
-
-        .player {
-            position: relative;
-            cursor: pointer;
-
-            --button-size: min(60px, 15vw);
-
-            .play-controls {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-
-                .play-icon {
-                    height: var(--button-size);
-                    width: var(--button-size);
-
-                    border-radius: 50%;
-
-                    background: var(--accent-pink);
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-
-                    outline: min(10px, 2.5vw) solid #fff;
-
-                    opacity: 1;
-                    transition: opacity 300ms ease;
-
-                    .icon {
-                        font-size: calc(var(--button-size) * 0.8);
-                        color: #fff;
-                    }
-                }
-            }
-
-            &.playing .play-icon {
-                opacity: 0;
-            }
-
-            video {
-                border-radius: 15px;
-
-                outline: min(10px, 2.5vw) solid var(--accent-pink);
-                z-index: 0;
-                position: relative;
-            }
         }
 
         p {
