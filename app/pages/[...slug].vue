@@ -11,15 +11,14 @@
     const config = useRuntimeConfig();
 
     // In development, use the live dynamic in-memory list. In production/SSG, use the static build-time file.
-    const showTypeSlugs = process.dev ? config.public.showTypeSlugs || [] : showTypeSlugsStatic;
-
+    const showTypeSlugs = import.meta.dev ? config.public.showTypeSlugs || [] : showTypeSlugsStatic;
     const isShowTypePage = showTypeSlugs.includes(slugStr);
 
     let story = null;
     if (!isShowTypePage) {
         ({story} = await useAsyncStoryblok(slugStr, {
             api: {
-                version: process.dev ? "draft" : "published",
+                version: import.meta.dev ? "draft" : "published",
             },
             bridge: {},
         }));
