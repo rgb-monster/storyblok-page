@@ -1,4 +1,3 @@
-import axios from "axios";
 import dt from "py-datetime";
 
 import {defineStore} from "pinia";
@@ -13,7 +12,7 @@ export const useStore = defineStore("shows", {
     state: () => {
         return {
             loaded: false,
-            loading: false,
+            loading: true,
             loadingShowTypes: false,
             allShows: [], // all shows, including those without any ticket data
             shows: null,
