@@ -110,6 +110,15 @@ window.__PRELOADED_DATA__ = {
                     page++;
                     await new Promise(resolve => setTimeout(resolve, 350));
                 }
+
+                const showTypesResponse = await fetch('https://storage.googleapis.com/confirmed-static-api/rgb-monster/show-types.json');
+                const showTypes = await showTypesResponse.json();
+                const showTypesRoutes = showTypes
+                    .filter(showType => showType.meta && showType.meta.slug)
+                    .map(showType => `/${showType.meta.slug}`);
+
+                const newRoutes = showTypesRoutes.filter(route => !routes.includes(route));
+                routes.push(...newRoutes);
         
                 // Add routes to prerender
                 nitroConfig.prerender = nitroConfig.prerender || {};
