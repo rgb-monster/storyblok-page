@@ -1,5 +1,5 @@
 <script setup>
-import showTypeSlugs from '~/show-types-generated.json';
+import showTypeSlugsStatic from '~/show-types-generated.json';
 
 const slug = useRoute().params.slug;
 let slugStr = slug && slug.length > 0 ? slug.join('/') : 'home';
@@ -8,8 +8,17 @@ let slugStr = slug && slug.length > 0 ? slug.join('/') : 'home';
 slugStr = slugStr.replace(/^\/+|\/+$/g, '');
 if (!slugStr) slugStr = 'home';
 
-console.log('[Debug Show Types] Normalized slug:', slugStr);
-console.log('[Debug Show Types] Slugs imported from JSON:', showTypeSlugs);
+const config = useRuntimeConfig();
+
+// In development, use the live dynamic in-memory list. In production/SSG, use the static build-time file.
+const showTypeSlugs = process.dev
+    ? (config.public.showTypeSlugs || [])
+    : showTypeSlugsStatic;
+
+console.log("rrrrrrrrrrrrrrrrrrrrrrr", config.public);
+
+console.log('[Debug Show Types] Current normalized slug:', slugStr);
+console.log('[Debug Show Types] Active show types list (dev=' + process.dev + '):', showTypeSlugs);
 
 const isShowTypePage = showTypeSlugs.includes(slugStr);
 console.log('[Debug Show Types] Is show type page?', isShowTypePage);
