@@ -5,11 +5,11 @@ export default defineNuxtConfig({
     compatibilityDate: "2026-01-13",
     devtools: {enabled: false},
     sourcemap: false,
-    modules: ["~/modules/show-types", "@storyblok/nuxt", "@pinia/nuxt"],
+    modules: ["~/modules/prerender", "@storyblok/nuxt", "@pinia/nuxt"],
 
     runtimeConfig: {
         public: {
-            // Only populated dynamically in dev mode via the show-types module
+            // Only populated dynamically in dev mode via the prerender module
             showTypeSlugs: [],
         },
     },
