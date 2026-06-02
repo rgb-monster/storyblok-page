@@ -1,7 +1,9 @@
 import mkcert from "vite-plugin-mkcert";
+import fs from "node:fs/promises";
+import path from "node:path";
 
-// Helper function to fetch and process show type slugs
-async function getShowTypeSlugs() {
+// Helper function to fetch, process, and save show type slugs to a local file
+async function generateAndSaveShowTypeSlugs() {
     const storyblokToken = process.env.STORYBLOK_DELIVERY_API_TOKEN;
     if (!storyblokToken) {
         console.warn('[Nuxt config] STORYBLOK_DELIVERY_API_TOKEN is not set, skipping show type generation.');
@@ -25,12 +27,17 @@ async function getShowTypeSlugs() {
             return [];
         }
         const showTypes = await showTypesResponse.json();
-        
+
         // Filter show types that are not in Storyblok
         const slugs = showTypes
-            .map(st => st.meta.slug)
+            .map(st => st.meta?.slug)
             .filter(slug => slug && !storyblokSlugs.has(slug));
-        
+
+        // Save to file
+        const filePath = path.resolve(process.cwd(), 'app/show-types-generated.json');
+        await fs.writeFile(filePath, JSON.stringify(slugs, null, 2));
+        console.log(`[Nuxt config] Successfully saved ${slugs.length} show type slugs to ${filePath}`);
+
         return slugs;
     } catch (error) {
         console.error('[Nuxt config] Error generating show type slugs:', error);
@@ -39,18 +46,15 @@ async function getShowTypeSlugs() {
 }
 
 export default defineNuxtConfig(async () => {
-    const ssgSlugs = (process.dev) ? [] : await getShowTypeSlugs();
+    // Generate and save show types file for production/SSG builds
+    if (!process.dev) {
+        await generateAndSaveShowTypeSlugs();
+    }
 
     return {
         compatibilityDate: "2026-01-13",
         devtools: {enabled: false},
         modules: ["@storyblok/nuxt", "@pinia/nuxt"],
-
-        runtimeConfig: {
-            public: {
-                showTypeSlugs: ssgSlugs,
-            }
-        },
 
         storyblok: {
             accessToken: process.env.STORYBLOK_DELIVERY_API_TOKEN,
@@ -124,11 +128,9 @@ window.__PRELOADED_DATA__ = {
             },
             'ready': async (nuxt) => {
                 if (!process.dev) return;
-                
-                console.log('[Nuxt ready hook] Fetching show type slugs for dev mode...');
-                const slugs = await getShowTypeSlugs();
-                nuxt.options.runtimeConfig.public.showTypeSlugs = slugs;
-                console.log(`[Nuxt ready hook] Found ${slugs.length} show type slugs.`);
+
+                console.log('[Nuxt ready hook] Generating show type slugs for dev...');
+                await generateAndSaveShowTypeSlugs();
             }
         },
 

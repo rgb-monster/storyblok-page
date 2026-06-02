@@ -1,10 +1,18 @@
 <script setup>
-const slug = useRoute().params.slug;
-const slugStr = slug && slug.length > 0 ? slug.join('/') : 'home';
+import showTypeSlugs from '~/show-types-generated.json';
 
-const config = useRuntimeConfig();
-const showTypeSlugs = config.public.showTypeSlugs || [];
+const slug = useRoute().params.slug;
+let slugStr = slug && slug.length > 0 ? slug.join('/') : 'home';
+
+// Normalize slugStr by stripping leading and trailing slashes
+slugStr = slugStr.replace(/^\/+|\/+$/g, '');
+if (!slugStr) slugStr = 'home';
+
+console.log('[Debug Show Types] Normalized slug:', slugStr);
+console.log('[Debug Show Types] Slugs imported from JSON:', showTypeSlugs);
+
 const isShowTypePage = showTypeSlugs.includes(slugStr);
+console.log('[Debug Show Types] Is show type page?', isShowTypePage);
 
 let story = null;
 if (!isShowTypePage) {
