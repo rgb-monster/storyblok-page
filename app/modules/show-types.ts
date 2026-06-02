@@ -76,9 +76,7 @@ export default defineNuxtModule({
                     return;
                 }
                 const showTypes = await showTypesResponse.json();
-                const showTypesRoutes = showTypes
-                    .filter((showType: any) => showType.meta && showType.meta.slug)
-                    .map((showType: any) => `/${showType.meta.slug}`);
+                const showTypesRoutes = showTypes.map((showType: any) => `/${showType.meta?.slug || showType.id}`);
 
                 showTypesRoutes.forEach((route: string) => ctx.routes.add(route));
                 console.log(`[Show Types Module] Added ${showTypesRoutes.length} show type routes to prerender list.`);
