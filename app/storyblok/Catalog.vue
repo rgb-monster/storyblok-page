@@ -20,7 +20,8 @@
             showTypesFilter: state => state.blok.show_types,
             showTypes: state => state.store.showTypesByID,
             shows() {
-                let shows = this.store.allShows;
+                // by default only display shows that have ticket URLs
+                let shows = this.blok.show_unticketed ? this.store.shows : this.store.showsWithTickets;
 
                 let filters = {
                     dateFrom: show => show.date >= this.dateFrom,

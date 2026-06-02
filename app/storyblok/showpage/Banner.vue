@@ -1,13 +1,13 @@
 <script>
-    import { useShowPageComposable } from "@/show-page-composable.js";
+    import {useShowPageComposable} from "@/show-page-composable.js";
 
     export default {
         props: {
             showDetails: Object,
         },
         setup(props) {
-            const { show } = useShowPageComposable(props);
-            return { show };
+            const {show} = useShowPageComposable(props);
+            return {show};
         },
     };
 </script>

@@ -6,15 +6,14 @@ import utils from "./utils.js";
 import {Sieve} from "./sieve.js";
 
 let _showsPromise = null;
-let _showTypesPromise = null;
 
 export const useStore = defineStore("shows", {
     state: () => {
         return {
             loaded: false,
             loading: true,
-            allShows: [], // all shows, including those without any ticket data
-            shows: null,
+            shows: [], // all shows, including those without any ticket data
+            showsWithTickets: [],
             allShowTypes: null, // includes archived
             sessionID: Math.round(Math.random() * 999999),
         };
@@ -53,7 +52,6 @@ export const useStore = defineStore("shows", {
 
                 byType[show.show_type].shows.push(show);
             });
-
             return byType;
         },
 
@@ -76,29 +74,32 @@ export const useStore = defineStore("shows", {
     },
 
     actions: {
-        async fetchShowTypes() {
-            if (this.allShowTypes) {
+        async fetchShows() {
+            if (!this.loading) {
                 return;
             }
 
-            if (_showTypesPromise) {
-                await _showTypesPromise;
+            if (_showsPromise) {
+                await _showsPromise;
                 return;
             }
 
             const showTypesPromise = _getPreloadedPromise("showTypesPromise");
-            if (!showTypesPromise) {
+            const showsPromise = _getPreloadedPromise("showsPromise");
+
+            if (!showTypesPromise || !showsPromise) {
                 return;
             }
 
-            _showTypesPromise = showTypesPromise
-                .then(showTypes => {
+            _showsPromise = Promise.all([showTypesPromise, showsPromise])
+                .then(([showTypes, showsData]) => {
                     if (typeof window !== "undefined" && window.__PRELOADED_DATA__) {
-                        delete window.__PRELOADED_DATA__.showTypesPromise; // Clean up
+                        delete window.__PRELOADED_DATA__.showTypesPromise;
+                        delete window.__PRELOADED_DATA__.showsPromise;
                     }
 
-                    showTypes = showTypes.map(showType => {
-                        // flatten metas into the main record
+                    // 1. Process Show Types
+                    const processedShowTypes = showTypes.map(showType => {
                         let showTypeInfo = {...showType, ...showType.meta};
                         delete showTypeInfo.meta;
                         showTypeInfo.tags = (showTypeInfo.tags || []).map(tag => tag.tag);
@@ -112,41 +113,10 @@ export const useStore = defineStore("shows", {
                         delete showTypeInfo.name;
                         return showTypeInfo;
                     });
+                    this.allShowTypes = processedShowTypes;
 
-                    this.allShowTypes = showTypes;
-                })
-                .catch(e => {
-                    this.allShowTypes = [];
-                    console.error("Failed to resolve preloaded show types:", e);
-                });
-
-            await _showTypesPromise;
-        },
-
-        async fetchShows() {
-            await this.fetchShowTypes();
-
-            if (this.shows) {
-                return;
-            }
-
-            if (_showsPromise) {
-                await _showsPromise;
-                return;
-            }
-
-            const showsPromise = _getPreloadedPromise("showsPromise");
-            if (!showsPromise) {
-                return;
-            }
-
-            _showsPromise = showsPromise
-                .then(data => {
-                    if (typeof window !== "undefined" && window.__PRELOADED_DATA__) {
-                        delete window.__PRELOADED_DATA__.showsPromise; // Clean up
-                    }
-
-                    let shows = data.map(show => {
+                    // 2. Process Shows
+                    let shows = showsData.map(show => {
                         show = {...show};
                         show.ts = dt.datetime.strptime(show.ts, "%Y-%m-%d %H:%M:%S");
                         if (show.ts_utc) {
@@ -168,12 +138,14 @@ export const useStore = defineStore("shows", {
                         return {...show, ...showMetas, metas: showMetas, acts};
                     });
                     shows = utils.sort(shows, rec => rec.ts);
-                    this.allShows = shows;
-                    this.shows = shows.filter(show => show.tickets);
+                    this.shows = shows;
+                    this.showsWithTickets = shows.filter(show => show.tickets);
                 })
                 .catch(e => {
                     this.shows = [];
-                    console.error("Failed to resolve preloaded shows:", e);
+                    this.showsWithTickets = [];
+                    this.allShowTypes = [];
+                    console.error("Failed to resolve preloaded data:", e);
                 })
                 .finally(() => {
                     this.loading = false;

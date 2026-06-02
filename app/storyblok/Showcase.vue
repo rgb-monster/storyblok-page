@@ -85,7 +85,7 @@
             this.resizeObserver.observe(document.body);
             this.onResize();
 
-            this.store.fetchShowTypes();
+            this.store.fetchShows();
         },
 
         beforeUnmount() {
