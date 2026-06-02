@@ -1,22 +1,31 @@
 <script setup>
-    import ShowPage from "@/storyblok/ShowPage.vue";
+const slug = useRoute().params.slug;
+const slugStr = slug && slug.length > 0 ? slug.join('/') : 'home';
 
-    const slug = useRoute().params.slug;
+const config = useRuntimeConfig();
+const showTypeSlugs = config.public.showTypeSlugs || [];
+const isShowTypePage = showTypeSlugs.includes(slugStr);
 
-    const {story} = await useAsyncStoryblok(slug && slug.length > 0 ? slug.join("/") : "home", {
-        api: {
-            version: "draft",
+let story = null;
+if (!isShowTypePage) {
+    ({ story } = await useAsyncStoryblok(
+        slugStr,
+        {
+            api: {
+                version: process.dev ? 'draft' : 'published',
+            },
+            bridge: {},
         },
-        bridge: {},
-    });
+    ));
+}
 
-    const mockBlok = {
-        component: "ShowPage",
-        body: [],
-    };
+const mockBlok = {
+    component: 'ShowPage',
+    body: [],
+};
 </script>
 
 <template>
-    <StoryblokComponent v-if="story" :blok="story.content" />
-    <ShowPage v-else :blok="mockBlok" />
+    <component v-if="isShowTypePage" :is="'ShowPage'" :blok="mockBlok" />
+    <StoryblokComponent v-else-if="story" :blok="story.content" />
 </template>

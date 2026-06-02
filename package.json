@@ -23,6 +23,7 @@
 	},
 	"devDependencies": {
 		"@storyblok/nuxt": "^10.1.6",
+		"eslint": "^10.4.1",
 		"postcss-custom-media": "^12.0.1",
 		"vite-plugin-mkcert": "^2.0.0"
 	}

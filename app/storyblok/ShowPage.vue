@@ -22,7 +22,7 @@
 
         computed: {
             standard: state => [undefined, true].includes(state.blok.standard_structure),
-            slug: state => state.route.params.slug[0], // we shall assume /shows/<showtype> structure
+            slug: state => (state.route.params.slug && state.route.params.slug[0]) || state.route.path.substring(1),
             theme: state => state.blok.colour || "beige",
             curtains: state => !state.blok.hide_curtains,
             loading: state => state.store.loading,
