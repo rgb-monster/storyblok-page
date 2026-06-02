@@ -6,6 +6,9 @@ import {defineStore} from "pinia";
 import utils from "./utils.js";
 import {Sieve} from "./sieve.js";
 
+let _showsPromise = null;
+let _showTypesPromise = null;
+
 export const useStore = defineStore("shows", {
     state: () => {
         return {
@@ -80,12 +83,20 @@ export const useStore = defineStore("shows", {
                 return;
             }
 
-            const showTypesPromise = _getPreloadedPromise('showTypesPromise');
-            if (showTypesPromise) {
-                this.loadingShowTypes = true;
-                try {
-                    let showTypes = await showTypesPromise;
-                    if (typeof window !== 'undefined' && window.__PRELOADED_DATA__) {
+            if (_showTypesPromise) {
+                await _showTypesPromise;
+                return;
+            }
+
+            const showTypesPromise = _getPreloadedPromise("showTypesPromise");
+            if (!showTypesPromise) {
+                return;
+            }
+
+            this.loadingShowTypes = true;
+            _showTypesPromise = showTypesPromise
+                .then(showTypes => {
+                    if (typeof window !== "undefined" && window.__PRELOADED_DATA__) {
                         delete window.__PRELOADED_DATA__.showTypesPromise; // Clean up
                     }
 
@@ -106,31 +117,44 @@ export const useStore = defineStore("shows", {
                     });
 
                     this.allShowTypes = showTypes;
-                } catch (e) {
+                })
+                .catch(e => {
                     this.allShowTypes = [];
-                    console.error('Failed to resolve preloaded show types:', e);
-                }
-                this.loadingShowTypes = false;
-            }
+                    console.error("Failed to resolve preloaded show types:", e);
+                })
+                .finally(() => {
+                    this.loadingShowTypes = false;
+                });
+
+            await _showTypesPromise;
         },
 
         async fetchShows() {
+            await this.fetchShowTypes();
+
             if (this.shows) {
                 return;
             }
 
-            await this.fetchShowTypes();
+            if (_showsPromise) {
+                await _showsPromise;
+                return;
+            }
 
-            const showsPromise = _getPreloadedPromise('showsPromise');
-            if (showsPromise) {
-                this.loading = true;
-                try {
-                    let data = await showsPromise;
-                    if (typeof window !== 'undefined' && window.__PRELOADED_DATA__) {
+            const showsPromise = _getPreloadedPromise("showsPromise");
+            if (!showsPromise) {
+                return;
+            }
+
+            this.loading = true;
+            _showsPromise = showsPromise
+                .then(data => {
+                    if (typeof window !== "undefined" && window.__PRELOADED_DATA__) {
                         delete window.__PRELOADED_DATA__.showsPromise; // Clean up
                     }
 
                     let shows = data.map(show => {
+                        show = {...show};
                         show.ts = dt.datetime.strptime(show.ts, "%Y-%m-%d %H:%M:%S");
                         if (show.ts_utc) {
                             show.ts_utc = dt.datetime.strptime(show.ts_utc, "%Y-%m-%dT%H:%M:%SZ", true);
@@ -144,7 +168,7 @@ export const useStore = defineStore("shows", {
                         let showMetas = _getShowMetas(this.showTypesByID[show.show_type], show);
                         show.title = showMetas.title || show.name;
                         delete show.name;
-                        let acts = show.acts;
+                        let acts = [...show.acts];
                         if (show.total_act_spots > acts.length) {
                             acts.push({empty: true, count: show.total_act_spots - acts.length});
                         }
@@ -153,18 +177,22 @@ export const useStore = defineStore("shows", {
                     shows = utils.sort(shows, rec => rec.ts);
                     this.allShows = shows;
                     this.shows = shows.filter(show => show.tickets);
-                } catch (e) {
+                })
+                .catch(e => {
                     this.shows = [];
-                    console.error('Failed to resolve preloaded shows:', e);
-                }
-                this.loading = false;
-            }
+                    console.error("Failed to resolve preloaded shows:", e);
+                })
+                .finally(() => {
+                    this.loading = false;
+                });
+
+            await _showsPromise;
         },
     },
 });
 
 function _getPreloadedPromise(key) {
-    if (typeof window !== 'undefined' && window.__PRELOADED_DATA__) {
+    if (typeof window !== "undefined" && window.__PRELOADED_DATA__) {
         return window.__PRELOADED_DATA__[key];
     }
     return null;

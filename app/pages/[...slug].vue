@@ -1,45 +1,34 @@
 <script setup>
-import showTypeSlugsStatic from '~/show-types-generated.json';
+    import showTypeSlugsStatic from "~/show-types-generated.json";
 
-const slug = useRoute().params.slug;
-let slugStr = slug && slug.length > 0 ? slug.join('/') : 'home';
+    const slug = useRoute().params.slug;
+    let slugStr = slug && slug.length > 0 ? slug.join("/") : "home";
 
-// Normalize slugStr by stripping leading and trailing slashes
-slugStr = slugStr.replace(/^\/+|\/+$/g, '');
-if (!slugStr) slugStr = 'home';
+    // Normalize slugStr by stripping leading and trailing slashes
+    slugStr = slugStr.replace(/^\/+|\/+$/g, "");
+    if (!slugStr) slugStr = "home";
 
-const config = useRuntimeConfig();
+    const config = useRuntimeConfig();
 
-// In development, use the live dynamic in-memory list. In production/SSG, use the static build-time file.
-const showTypeSlugs = process.dev
-    ? (config.public.showTypeSlugs || [])
-    : showTypeSlugsStatic;
+    // In development, use the live dynamic in-memory list. In production/SSG, use the static build-time file.
+    const showTypeSlugs = process.dev ? config.public.showTypeSlugs || [] : showTypeSlugsStatic;
 
-console.log("rrrrrrrrrrrrrrrrrrrrrrr", config.public);
+    const isShowTypePage = showTypeSlugs.includes(slugStr);
 
-console.log('[Debug Show Types] Current normalized slug:', slugStr);
-console.log('[Debug Show Types] Active show types list (dev=' + process.dev + '):', showTypeSlugs);
-
-const isShowTypePage = showTypeSlugs.includes(slugStr);
-console.log('[Debug Show Types] Is show type page?', isShowTypePage);
-
-let story = null;
-if (!isShowTypePage) {
-    ({ story } = await useAsyncStoryblok(
-        slugStr,
-        {
+    let story = null;
+    if (!isShowTypePage) {
+        ({story} = await useAsyncStoryblok(slugStr, {
             api: {
-                version: process.dev ? 'draft' : 'published',
+                version: process.dev ? "draft" : "published",
             },
             bridge: {},
-        },
-    ));
-}
+        }));
+    }
 
-const mockBlok = {
-    component: 'ShowPage',
-    body: [],
-};
+    const mockBlok = {
+        component: "ShowPage",
+        body: [],
+    };
 </script>
 
 <template>
