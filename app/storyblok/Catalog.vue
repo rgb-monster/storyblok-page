@@ -11,7 +11,6 @@
         data() {
             return {
                 store: useStore(),
-                loading: true,
             };
         },
         computed: {
@@ -78,9 +77,8 @@
             },
         },
 
-        async mounted() {
-            await this.store.fetchShows();
-            this.loading = false;
+        mounted() {
+            this.store.fetchShows();
         },
     };
 </script>

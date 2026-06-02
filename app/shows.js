@@ -13,7 +13,6 @@ export const useStore = defineStore("shows", {
         return {
             loaded: false,
             loading: true,
-            loadingShowTypes: false,
             allShows: [], // all shows, including those without any ticket data
             shows: null,
             allShowTypes: null, // includes archived
@@ -92,7 +91,6 @@ export const useStore = defineStore("shows", {
                 return;
             }
 
-            this.loadingShowTypes = true;
             _showTypesPromise = showTypesPromise
                 .then(showTypes => {
                     if (typeof window !== "undefined" && window.__PRELOADED_DATA__) {
@@ -120,9 +118,6 @@ export const useStore = defineStore("shows", {
                 .catch(e => {
                     this.allShowTypes = [];
                     console.error("Failed to resolve preloaded show types:", e);
-                })
-                .finally(() => {
-                    this.loadingShowTypes = false;
                 });
 
             await _showTypesPromise;
@@ -145,7 +140,6 @@ export const useStore = defineStore("shows", {
                 return;
             }
 
-            this.loading = true;
             _showsPromise = showsPromise
                 .then(data => {
                     if (typeof window !== "undefined" && window.__PRELOADED_DATA__) {

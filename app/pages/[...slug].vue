@@ -11,7 +11,7 @@
     const config = useRuntimeConfig();
 
     // In development, use the live dynamic in-memory list. In production/SSG, use the static build-time file.
-    const showTypeSlugs = import.meta.dev ? config.public.showTypeSlugs || [] : showTypeSlugsStatic;
+    const showTypeSlugs = import.meta.dev ? config.public.showTypeSlugs : showTypeSlugsStatic;
     const isShowTypePage = showTypeSlugs.includes(slugStr);
 
     let story = null;
