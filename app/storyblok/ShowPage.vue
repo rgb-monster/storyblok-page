@@ -126,7 +126,6 @@
                 {threshold: 1}
             );
             await this.store.fetchShows();
-            this.loaded = true;
 
             await this.$nextTick();
 
@@ -147,7 +146,7 @@
 </script>
 
 <template>
-    <main v-editable="blok" class="show-page" :class="theme">
+    <main v-editable="blok" class="show-page" :class="theme" v-if="!loading">
         <template v-if="curtains">
             <img class="curtains-left" src="/curtains-left.webp" :class="{hidden: pushAway < -5}" />
             <img class="curtains-right" src="/curtains-right.webp" :class="{hidden: pushAway < -5}" />
@@ -180,16 +179,6 @@
                                 <Icon name="calendar_month" />
                                 <div v-if="!loading">{{ dates }}</div>
                             </div>
-
-                            <!-- <div>
-                            <Icon name="location_on" />
-                            <div v-if="!loading">{{ topShow?.venue?.name }}</div>
-                        </div>
-
-                        <div>
-                            <Icon name="schedule" />
-                            <div v-if="!loading">{{ topShow?.ts?.strftime("%H:%M") }}</div>
-                        </div> -->
                         </div>
 
                         <div class="tags">

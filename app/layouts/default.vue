@@ -1,9 +1,11 @@
 <script setup>
+    import {useStore} from "@/shows.js";
     const currentYear = new Date().getFullYear();
+    const store = useStore();
 </script>
 <template>
     <slot></slot>
-    <footer>
+    <footer v-if="!store.loading">
         <div class="top-swoosh" />
         <div class="container">&copy; {{ currentYear }} RGB Monster</div>
     </footer>
