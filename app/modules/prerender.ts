@@ -66,21 +66,40 @@ async function getShowTypeSlugs() {
     return slugs;
 }
 
+// Process and return show type titles mapping
+async function getShowTypeTitlesMap() {
+    const showTypes = await getShowTypes();
+    const titlesMap = Object.fromEntries(
+        showTypes
+            .map((showType: any) => [
+                showType.meta?.slug || showType.id,
+                showType.meta?.title || showType.name,
+            ])
+            .filter(([slug]) => slug)
+    );
+    return titlesMap;
+}
+
 export default defineNuxtModule({
     meta: {
         name: "prerender",
     },
     async setup(options, nuxt) {
-        // Handle show type generation
+        // Handle show type generation and title mapping
+        const slugs = await getShowTypeSlugs();
+        const titlesMap = await getShowTypeTitlesMap();
+        
+        const slugsFilePath = path.resolve(nuxt.options.rootDir, "app/show-types-generated.json");
+        const titlesFilePath = path.resolve(nuxt.options.rootDir, "app/show-types-titles.json");
+        
+        await fs.writeFile(slugsFilePath, JSON.stringify(slugs, null, 2));
+        await fs.writeFile(titlesFilePath, JSON.stringify(titlesMap, null, 2));
+
         if (nuxt.options.dev) {
-            const slugs = await getShowTypeSlugs();
             nuxt.options.runtimeConfig.public.showTypeSlugs = slugs;
-            console.log(`[Prerender Module] Loaded ${slugs.length} show type slugs in-memory for dev mode.`);
+            console.log(`[Prerender Module] Loaded ${slugs.length} show type slugs and titles map for dev mode.`);
         } else {
-            const slugs = await getShowTypeSlugs();
-            const filePath = path.resolve(nuxt.options.rootDir, "app/show-types-generated.json");
-            await fs.writeFile(filePath, JSON.stringify(slugs, null, 2));
-            console.log(`[Prerender Module] Successfully saved ${slugs.length} show type slugs to ${filePath}`);
+            console.log(`[Prerender Module] Successfully saved ${slugs.length} show type slugs to ${slugsFilePath} and titles map to ${titlesFilePath}`);
         }
 
         // Handle prerendering routes

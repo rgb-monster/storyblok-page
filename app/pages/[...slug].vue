@@ -1,4 +1,5 @@
 <script setup>
+    import showTypeTitlesStatic from "~/show-types-titles.json";
     import showTypeSlugsStatic from "~/show-types-generated.json";
 
     const slug = useRoute().params.slug;
@@ -22,7 +23,23 @@
             },
             bridge: {},
         }));
+        story = story.value || {};
     }
+
+    // Set page title dynamically (completely synchronously on both server and client!)
+    let pageTitle = "RGB Monster - An Unusual Comedy Production";
+    if (isShowTypePage) {
+        const title = showTypeTitlesStatic[slugStr];
+        if (title) {
+            pageTitle = `${title} | ${pageTitle}`;
+        }
+    } else if (story && story.name && story.name.toLowerCase() !== "home") {
+        pageTitle = `${story.name} | ${pageTitle}`;
+    }
+
+    useHead({
+        title: pageTitle,
+    });
 
     const mockBlok = {
         component: "ShowPage",

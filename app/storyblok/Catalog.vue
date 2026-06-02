@@ -88,7 +88,7 @@
     <div class="show-catalog" v-editable="blok">
         <div class="shows">
             <template v-for="{details, shows} in byShowType" :key="details.type">
-                <a class="show-type-tile" :class="(details.tags || [])[0]" :href="`/${details.slug}${filterIfPresent}`">
+                <NuxtLink class="show-type-tile" :class="(details.tags || [])[0]" :href="`/${details.slug}${filterIfPresent}`">
                     <div class="cover-image" v-if="details.coverThumb">
                         <img :src="details.coverThumb" />
                     </div>
@@ -113,7 +113,7 @@
                             </div>
                         </div>
                     </div>
-                </a>
+                </NuxtLink>
             </template>
         </div>
     </div>

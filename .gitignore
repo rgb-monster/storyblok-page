@@ -6,6 +6,7 @@
 .cache
 dist
 app/show-types-generated.json
+app/show-types-titles.json
 
 # Node dependencies
 node_modules
