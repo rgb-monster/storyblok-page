@@ -1,13 +1,10 @@
-import { defineNuxtModule } from "@nuxt/kit";
+import {defineNuxtModule} from "@nuxt/kit";
 import fs from "node:fs/promises";
 import path from "node:path";
 
 let cachedStoryblokLinks: any[] | null = null;
-let cachedShowTypes: any[] | null = null;
-
-// Helper to fetch and cache Storyblok links
 async function getStoryblokLinks(token: string) {
-    if (cachedStoryblokLinks) {
+    if (cachedStoryblokLinks != null) {
         return cachedStoryblokLinks;
     }
 
@@ -20,17 +17,17 @@ async function getStoryblokLinks(token: string) {
             return [];
         }
         const storyblokData = await storyblokResponse.json();
-        cachedStoryblokLinks = Object.values(storyblokData.links);
-        return cachedStoryblokLinks;
+        cachedStoryblokLinks = Object.values(storyblokData.links) || [];
+        return cachedStoryblokLinks || [];
     } catch (error) {
         console.error("[Prerender Module] Error fetching Storyblok links:", error);
         return [];
     }
 }
 
-// Helper to fetch and cache show types
+let cachedShowTypes: any[] | null = null;
 async function getShowTypes() {
-    if (cachedShowTypes) {
+    if (cachedShowTypes !== null) {
         return cachedShowTypes;
     }
 
@@ -42,8 +39,8 @@ async function getShowTypes() {
             console.error(`[Prerender Module] Failed to fetch show types: ${showTypesResponse.statusText}`);
             return [];
         }
-        cachedShowTypes = await showTypesResponse.json();
-        return cachedShowTypes;
+        cachedShowTypes = (await showTypesResponse.json()) || [];
+        return cachedShowTypes || [];
     } catch (error) {
         console.error("[Prerender Module] Error fetching show types:", error);
         return [];
@@ -91,9 +88,7 @@ export default defineNuxtModule({
             try {
                 // Fetch and register show type routes
                 const showTypes = await getShowTypes();
-                const showTypesRoutes = showTypes
-                    .filter((showType: any) => showType.meta && showType.meta.slug)
-                    .map((showType: any) => `/${showType.meta.slug}`);
+                const showTypesRoutes = showTypes.map((showType: any) => `/${showType.meta.slug || showType.id}`);
 
                 showTypesRoutes.forEach((route: string) => ctx.routes.add(route));
                 console.log(`[Prerender Module] Added ${showTypesRoutes.length} show type routes to prerender list.`);
@@ -111,7 +106,9 @@ export default defineNuxtModule({
                         let formattedRoute = route.startsWith("/") ? route : `/${route}`;
                         ctx.routes.add(formattedRoute);
                     });
-                    console.log(`[Prerender Module] Added ${storyblokRoutes.length} Storyblok content routes to prerender list.`);
+                    console.log(
+                        `[Prerender Module] Added ${storyblokRoutes.length} Storyblok content routes to prerender list.`
+                    );
                 }
             } catch (error) {
                 console.error("[Prerender Module] Error adding prerender routes:", error);
