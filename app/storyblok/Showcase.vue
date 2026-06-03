@@ -299,7 +299,7 @@
                     <img class="laptop" src="/stage/laptop.webp" />
                     <div class="laptop-screen">
                         <template v-if="currentItem">
-                            <video loop muted autoplay v-show="currentItem.type == 'video'">
+                            <video loop muted autoplay v-if="currentItem.type == 'video'">
                                 <source :src="currentItem.webm" type="video/webm" v-if="currentItem.webm" />
                                 <source :src="currentItem.mp4" type="video/mp4" v-if="currentItem.mp4" />
                             </video>
@@ -419,7 +419,8 @@
                 z-index: 200;
 
                 .presenter-screen {
-                    height: 40.5cqmin;
+                    height: 36cqmin;
+                    overflow: hidden;
 
                     img {
                         height: 100%;
@@ -497,19 +498,21 @@
 
                 .laptop-screen {
                     position: absolute;
-                    left: 0;
-                    left: 19%;
-                    top: 10%;
 
-                    width: 60%;
+                    top: 9.8%;
+
+                    height: 14cqmin;
+                    width: 28cqmin;
+                    overflow: hidden;
+                    border-radius: 1cqmin;
+                    left: 15%;
+                    border: 3px solid #000;
+                    background: #000;
 
                     video,
                     img {
                         width: 100%;
-                        line-height: 100%;
                         padding: 0;
-                        border: 4px solid #000;
-                        border-radius: 1cqmin;
                     }
                 }
 
