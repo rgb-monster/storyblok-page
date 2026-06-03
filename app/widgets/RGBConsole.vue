@@ -120,8 +120,8 @@
             height: 100%;
             position: absolute;
             top: 0;
-            left: 7%;
-            width: 85%;
+            left: 3%;
+            aspect-ratio: 507/381;
         }
 
         .slider-box {
@@ -138,15 +138,15 @@
                 cursor: grab;
 
                 &.knob-1 {
-                    left: 2%;
+                    left: 5%;
                 }
 
                 &.knob-2 {
-                    left: 40%;
+                    left: 38%;
                 }
 
                 &.knob-3 {
-                    left: 80%;
+                    left: 70%;
                 }
             }
 

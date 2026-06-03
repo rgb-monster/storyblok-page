@@ -325,7 +325,7 @@
         style="padding-bottom: 2em; margin-top: -2px"
         v-if="!single"
     >
-        <img src="/stage/stage-bottom.webp" />
+        <img src="/stage/stage-bottom.webp" style="width: 100%" />
     </div>
 </template>
 
@@ -468,7 +468,7 @@
 
                 .stage {
                     width: 100%;
-                    height: 20em;
+                    height: min(40em, 50cqmin);
                 }
 
                 &.single {
