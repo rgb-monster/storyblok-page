@@ -96,227 +96,220 @@
 
 <template>
     <div class="rgb-stage-container" v-editable="blok">
-        <BorderBox :jaggedness="outerJags" :radius="0" :horizOnly="true" :style="{'--beam-color': beamColor}">
-            <div class="rgb-stage" :style="{background: `hsl(${wallColor[0]}, ${wallColor[1]}%, ${wallColor[2]}%) `}">
-                <div class="top-fringe" />
-                <img class="curtain left" src="/stage/curtain-left.webp" />
-                <img class="curtain right" src="/stage/curtain-right.webp" />
-                <img class="fixture left" src="/stage/light-left.webp" />
-                <img class="fixture right" src="/stage/light-right.webp" />
+        <div class="rgb-stage" :style="{background: `hsl(${wallColor[0]}, ${wallColor[1]}%, ${wallColor[2]}%) `}">
+            <div class="top-fringe" />
+            <img class="curtain left" src="/stage/curtain-left.webp" />
+            <img class="curtain right" src="/stage/curtain-right.webp" />
+            <img class="fixture left" src="/stage/light-left.webp" />
+            <img class="fixture right" src="/stage/light-right.webp" />
 
-                <svg
-                    width="573.548"
-                    height="380.793"
-                    viewBox="0 0 151.751 100.751"
-                    xmlns:xlink="http://www.w3.org/1999/xlink"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="beam right"
-                    :style="{'mix-blend-mode': 'lighten'}"
-                >
-                    <defs>
-                        <linearGradient id="b1">
-                            <stop :style="`stop-color: var(--beam-color); stop-opacity: 0`" offset="0" />
-                            <stop :style="`stop-color: var(--beam-color); stop-opacity: 0.64705884`" offset=".079" />
-                            <stop :style="`stop-color: var(--beam-color); stop-opacity: 0`" offset="1" />
-                        </linearGradient>
-                        <linearGradient
-                            xlink:href="#a1"
-                            id="d1"
-                            gradientUnits="userSpaceOnUse"
-                            x1="9.648"
-                            y1="36.34"
-                            x2="457.311"
-                            y2="290.402"
-                            gradientTransform="matrix(.25273 -.0783 .0783 .25273 13.342 69.554)"
-                        />
-                        <linearGradient id="a1">
-                            <stop :style="`stop-color: var(--beam-color); stop-opacity: 0`" offset="0" />
-                            <stop :style="`stop-color: var(--beam-color); stop-opacity: 0.64705884`" offset=".079" />
-                            <stop :style="`stop-color: var(--beam-color); stop-opacity: 0`" offset="1" />
-                        </linearGradient>
-                        <linearGradient
-                            xlink:href="#b1"
-                            id="c1"
-                            x1="9.648"
-                            y1="36.34"
-                            x2="457.311"
-                            y2="290.402"
-                            gradientUnits="userSpaceOnUse"
-                            gradientTransform="matrix(.26458 0 0 .26458 17.607 71.493)"
-                        />
-                    </defs>
-                    <path
-                        style="
-                            mix-blend-mode: normal;
-                            fill: url(#c1);
-                            stroke: none;
-                            stroke-width: 0.264583px;
-                            stroke-linecap: butt;
-                            stroke-linejoin: miter;
-                            stroke-opacity: 1;
-                        "
-                        d="m11.821 85.788 127.464 83.047 15.826-33.525L22.372 72.004Z"
-                        transform="translate(-11.821 -68.631)"
+            <svg
+                width="573.548"
+                height="380.793"
+                viewBox="0 0 151.751 100.751"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                xmlns="http://www.w3.org/2000/svg"
+                class="beam right"
+                :style="{'mix-blend-mode': 'lighten'}"
+            >
+                <defs>
+                    <linearGradient id="b1">
+                        <stop :style="`stop-color: var(--beam-color); stop-opacity: 0`" offset="0" />
+                        <stop :style="`stop-color: var(--beam-color); stop-opacity: 0.64705884`" offset=".079" />
+                        <stop :style="`stop-color: var(--beam-color); stop-opacity: 0`" offset="1" />
+                    </linearGradient>
+                    <linearGradient
+                        xlink:href="#a1"
+                        id="d1"
+                        gradientUnits="userSpaceOnUse"
+                        x1="9.648"
+                        y1="36.34"
+                        x2="457.311"
+                        y2="290.402"
+                        gradientTransform="matrix(.25273 -.0783 .0783 .25273 13.342 69.554)"
                     />
-                    <path
-                        style="
-                            fill: url(#d1);
-                            stroke: none;
-                            stroke-width: 0.264583px;
-                            stroke-linecap: butt;
-                            stroke-linejoin: miter;
-                            stroke-opacity: 1;
-                        "
-                        d="m12.045 84.92 146.331 41.607 5.197-36.708L18.044 68.631Z"
-                        transform="translate(-11.821 -68.631)"
+                    <linearGradient id="a1">
+                        <stop :style="`stop-color: var(--beam-color); stop-opacity: 0`" offset="0" />
+                        <stop :style="`stop-color: var(--beam-color); stop-opacity: 0.64705884`" offset=".079" />
+                        <stop :style="`stop-color: var(--beam-color); stop-opacity: 0`" offset="1" />
+                    </linearGradient>
+                    <linearGradient
+                        xlink:href="#b1"
+                        id="c1"
+                        x1="9.648"
+                        y1="36.34"
+                        x2="457.311"
+                        y2="290.402"
+                        gradientUnits="userSpaceOnUse"
+                        gradientTransform="matrix(.26458 0 0 .26458 17.607 71.493)"
                     />
-                </svg>
+                </defs>
+                <path
+                    style="
+                        mix-blend-mode: normal;
+                        fill: url(#c1);
+                        stroke: none;
+                        stroke-width: 0.264583px;
+                        stroke-linecap: butt;
+                        stroke-linejoin: miter;
+                        stroke-opacity: 1;
+                    "
+                    d="m11.821 85.788 127.464 83.047 15.826-33.525L22.372 72.004Z"
+                    transform="translate(-11.821 -68.631)"
+                />
+                <path
+                    style="
+                        fill: url(#d1);
+                        stroke: none;
+                        stroke-width: 0.264583px;
+                        stroke-linecap: butt;
+                        stroke-linejoin: miter;
+                        stroke-opacity: 1;
+                    "
+                    d="m12.045 84.92 146.331 41.607 5.197-36.708L18.044 68.631Z"
+                    transform="translate(-11.821 -68.631)"
+                />
+            </svg>
 
-                <svg
-                    width="573.548"
-                    height="380.793"
-                    viewBox="0 0 151.751 100.751"
-                    xmlns:xlink="http://www.w3.org/1999/xlink"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="beam left"
-                    :style="{'mix-blend-mode': 'lighten'}"
-                >
-                    <defs>
-                        <linearGradient id="b">
-                            <stop :style="`stop-color: var(--beam-color); stop-opacity: 0`" offset="0" />
-                            <stop :style="`stop-color: var(--beam-color); stop-opacity: 0.64705884`" offset=".079" />
-                            <stop :style="`stop-color: var(--beam-color); stop-opacity: 0`" offset="1" />
-                        </linearGradient>
-                        <linearGradient
-                            xlink:href="#a"
-                            id="d"
-                            gradientUnits="userSpaceOnUse"
-                            x1="9.648"
-                            y1="36.34"
-                            x2="457.311"
-                            y2="290.402"
-                            gradientTransform="matrix(.25273 -.0783 .0783 .25273 13.342 69.554)"
-                        />
-                        <linearGradient id="a">
-                            <stop :style="`stop-color: var(--beam-color); stop-opacity: 0`" offset="0" />
-                            <stop :style="`stop-color: var(--beam-color); stop-opacity: 0.64705884`" offset=".079" />
-                            <stop :style="`stop-color: var(--beam-color); stop-opacity: 0`" offset="1" />
-                        </linearGradient>
-                        <linearGradient
-                            xlink:href="#b"
-                            id="c"
-                            x1="9.648"
-                            y1="36.34"
-                            x2="457.311"
-                            y2="290.402"
-                            gradientUnits="userSpaceOnUse"
-                            gradientTransform="matrix(.26458 0 0 .26458 17.607 71.493)"
-                        />
-                    </defs>
-                    <path
-                        style="
-                            mix-blend-mode: normal;
-                            fill: url(#c);
-                            stroke: none;
-                            stroke-width: 0.264583px;
-                            stroke-linecap: butt;
-                            stroke-linejoin: miter;
-                            stroke-opacity: 1;
-                        "
-                        d="m11.821 85.788 127.464 83.047 15.826-33.525L22.372 72.004Z"
-                        transform="translate(-11.821 -68.631)"
+            <svg
+                width="573.548"
+                height="380.793"
+                viewBox="0 0 151.751 100.751"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                xmlns="http://www.w3.org/2000/svg"
+                class="beam left"
+                :style="{'mix-blend-mode': 'lighten'}"
+            >
+                <defs>
+                    <linearGradient id="b">
+                        <stop :style="`stop-color: var(--beam-color); stop-opacity: 0`" offset="0" />
+                        <stop :style="`stop-color: var(--beam-color); stop-opacity: 0.64705884`" offset=".079" />
+                        <stop :style="`stop-color: var(--beam-color); stop-opacity: 0`" offset="1" />
+                    </linearGradient>
+                    <linearGradient
+                        xlink:href="#a"
+                        id="d"
+                        gradientUnits="userSpaceOnUse"
+                        x1="9.648"
+                        y1="36.34"
+                        x2="457.311"
+                        y2="290.402"
+                        gradientTransform="matrix(.25273 -.0783 .0783 .25273 13.342 69.554)"
                     />
-                    <path
-                        style="
-                            mix-blend-mode: multiply;
-                            fill: url(#d);
-                            stroke: none;
-                            stroke-width: 0.264583px;
-                            stroke-linecap: butt;
-                            stroke-linejoin: miter;
-                            stroke-opacity: 1;
-                        "
-                        d="m12.045 84.92 146.331 41.607 5.197-36.708L18.044 68.631Z"
-                        transform="translate(-11.821 -68.631)"
+                    <linearGradient id="a">
+                        <stop :style="`stop-color: var(--beam-color); stop-opacity: 0`" offset="0" />
+                        <stop :style="`stop-color: var(--beam-color); stop-opacity: 0.64705884`" offset=".079" />
+                        <stop :style="`stop-color: var(--beam-color); stop-opacity: 0`" offset="1" />
+                    </linearGradient>
+                    <linearGradient
+                        xlink:href="#b"
+                        id="c"
+                        x1="9.648"
+                        y1="36.34"
+                        x2="457.311"
+                        y2="290.402"
+                        gradientUnits="userSpaceOnUse"
+                        gradientTransform="matrix(.26458 0 0 .26458 17.607 71.493)"
                     />
-                </svg>
+                </defs>
+                <path
+                    style="
+                        mix-blend-mode: normal;
+                        fill: url(#c);
+                        stroke: none;
+                        stroke-width: 0.264583px;
+                        stroke-linecap: butt;
+                        stroke-linejoin: miter;
+                        stroke-opacity: 1;
+                    "
+                    d="m11.821 85.788 127.464 83.047 15.826-33.525L22.372 72.004Z"
+                    transform="translate(-11.821 -68.631)"
+                />
+                <path
+                    style="
+                        mix-blend-mode: multiply;
+                        fill: url(#d);
+                        stroke: none;
+                        stroke-width: 0.264583px;
+                        stroke-linecap: butt;
+                        stroke-linejoin: miter;
+                        stroke-opacity: 1;
+                    "
+                    d="m12.045 84.92 146.331 41.607 5.197-36.708L18.044 68.631Z"
+                    transform="translate(-11.821 -68.631)"
+                />
+            </svg>
 
-                <div class="projector-screen">
-                    <BorderBox shadow="true" :radius="20">
-                        <div class="video-box">
-                            <BorderBox :radius="10">
-                                <div class="presenter-screen">
-                                    <template v-if="currentItem">
-                                        <video loop muted autoplay v-if="currentItem.type == 'video'">
-                                            <source :src="currentItem.webm" type="video/webm" v-if="currentItem.webm" />
-                                            <source :src="currentItem.mp4" type="video/mp4" v-if="currentItem.mp4" />
-                                        </video>
+            <div class="projector-screen">
+                <BorderBox shadow="true" :radius="20">
+                    <div class="video-box">
+                        <BorderBox :radius="10">
+                            <div class="presenter-screen">
+                                <template v-if="currentItem">
+                                    <video loop muted autoplay v-if="currentItem.type == 'video'">
+                                        <source :src="currentItem.webm" type="video/webm" v-if="currentItem.webm" />
+                                        <source :src="currentItem.mp4" type="video/mp4" v-if="currentItem.mp4" />
+                                    </video>
 
-                                        <img v-else :src="currentItem.image" />
-                                    </template>
-                                </div>
-                            </BorderBox>
-                        </div>
-                    </BorderBox>
-
-                    <svg height="0" width="0">
-                        <defs>
-                            <filter id="stage-title-outline">
-                                <!-- 1. Enlarge the shape -->
-                                <feMorphology
-                                    in="SourceAlpha"
-                                    result="DILATED"
-                                    operator="dilate"
-                                    radius="3"
-                                ></feMorphology>
-
-                                <!-- 2. Blur the enlarged shape to round the corners -->
-                                <feGaussianBlur in="DILATED" result="BLURRED" stdDeviation="3"></feGaussianBlur>
-
-                                <!-- 3. Create the outline color -->
-                                <feFlood flood-color="#f5e6c9" result="flood"></feFlood>
-
-                                <!-- 4. Composite the color into the blurred shape -->
-                                <feComposite in="flood" in2="BLURRED" operator="in" result="OUTLINE_GLOW"></feComposite>
-
-                                <!-- 5. Merge the glow and the original text -->
-                                <feMerge>
-                                    <feMergeNode in="OUTLINE_GLOW" />
-                                    <feMergeNode in="SourceGraphic" />
-                                </feMerge>
-                            </filter>
-                        </defs>
-                    </svg>
-                </div>
-
-                <div class="stage-box">
-                    <img class="stage" src="/stage/stage.webp" />
-
-                    <div class="laptop-box">
-                        <img class="laptop" src="/stage/laptop.webp" />
-                        <div class="laptop-screen">
-                            <template v-if="currentItem">
-                                <video loop muted autoplay v-show="currentItem.type == 'video'">
-                                    <source :src="currentItem.webm" type="video/webm" v-if="currentItem.webm" />
-                                    <source :src="currentItem.mp4" type="video/mp4" v-if="currentItem.mp4" />
-                                </video>
-
-                                <img v-show="currentItem.type != 'video'" :src="currentItem.image" />
-                            </template>
-                        </div>
-                        <button class="laptop-button left" @mousedown="changeItem(-1)" />
-                        <button class="laptop-button right" @mousedown="changeItem(1)" />
+                                    <img v-else :src="currentItem.image" />
+                                </template>
+                            </div>
+                        </BorderBox>
                     </div>
+                </BorderBox>
 
-                    <div class="projector-box">
-                        <img class="projector-beam" src="/stage/light-beam-projector.webp" />
-                        <img class="projector" src="/stage/projector.webp" />
-                    </div>
+                <svg height="0" width="0">
+                    <defs>
+                        <filter id="stage-title-outline">
+                            <!-- 1. Enlarge the shape -->
+                            <feMorphology in="SourceAlpha" result="DILATED" operator="dilate" radius="3"></feMorphology>
 
-                    <Console :color="beamColor" @update="updateColor($event)" />
-                </div>
+                            <!-- 2. Blur the enlarged shape to round the corners -->
+                            <feGaussianBlur in="DILATED" result="BLURRED" stdDeviation="3"></feGaussianBlur>
+
+                            <!-- 3. Create the outline color -->
+                            <feFlood flood-color="#f5e6c9" result="flood"></feFlood>
+
+                            <!-- 4. Composite the color into the blurred shape -->
+                            <feComposite in="flood" in2="BLURRED" operator="in" result="OUTLINE_GLOW"></feComposite>
+
+                            <!-- 5. Merge the glow and the original text -->
+                            <feMerge>
+                                <feMergeNode in="OUTLINE_GLOW" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                    </defs>
+                </svg>
             </div>
-        </BorderBox>
+
+            <div class="stage-box">
+                <img class="stage" src="/stage/stage.webp" />
+
+                <div class="laptop-box">
+                    <img class="laptop" src="/stage/laptop.webp" />
+                    <div class="laptop-screen">
+                        <template v-if="currentItem">
+                            <video loop muted autoplay v-show="currentItem.type == 'video'">
+                                <source :src="currentItem.webm" type="video/webm" v-if="currentItem.webm" />
+                                <source :src="currentItem.mp4" type="video/mp4" v-if="currentItem.mp4" />
+                            </video>
+
+                            <img v-show="currentItem.type != 'video'" :src="currentItem.image" />
+                        </template>
+                    </div>
+                    <button class="laptop-button left" @mousedown="changeItem(-1)" />
+                    <button class="laptop-button right" @mousedown="changeItem(1)" />
+                </div>
+
+                <div class="projector-box">
+                    <img class="projector-beam" src="/stage/light-beam-projector.webp" />
+                    <img class="projector" src="/stage/projector.webp" />
+                </div>
+
+                <Console :color="beamColor" @update="updateColor($event)" />
+            </div>
+        </div>
     </div>
     <div
         :style="{background: `hsl(${wallColor[0]}, ${wallColor[1]}%, ${wallColor[2]}%) `}"
