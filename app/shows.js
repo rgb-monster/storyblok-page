@@ -1,9 +1,7 @@
 import dt from "py-datetime";
-
 import {defineStore} from "pinia";
 
 import utils from "./utils.js";
-import {Sieve} from "./sieve.js";
 
 let _showsPromise = null;
 
@@ -13,67 +11,114 @@ export const useStore = defineStore("shows", {
             loaded: false,
             loading: true,
             shows: [], // all shows, including those without any ticket data
-            showsWithTickets: [],
             allShowTypes: null, // includes archived
-            sessionID: Math.round(Math.random() * 999999),
+            filter: {},
         };
     },
 
     getters: {
-        showsSieve() {
-            let shows = this.shows || [];
-            let serialized = shows.map(show => {
-                return {
-                    id: show.id,
-                    city: show.venue.city,
-                    venue: show.venue.name,
-                    acts: show.acts.map(act => act.name),
-                    ts: show.ts.strftime("%A %B %d %Y %H:%M").split(" "),
-                    ts_str: show.ts.strftime("%A %b %d %Y %H:%M"),
-                };
-            });
-            return new Sieve(serialized);
-        },
-
-        showsByShowType() {
-            // groups shows by type
-            let byType = {};
-            (this.shows || []).forEach(show => {
-                if (!byType[show.show_type]) {
-                    byType[show.show_type] = {
-                        ...show.metas,
-                        title: show.title,
-                        emoji: show.emoji,
-                        duration: show.duration,
-                        description: show.public_description,
-                        shows: [],
-                    };
-                }
-
-                byType[show.show_type].shows.push(show);
-            });
-            return byType;
-        },
-
-        showsByTag() {
-            let byTag = {};
-            this.shows.forEach(show => {
-                show.tags.forEach(tag => {
-                    utils.setDefault(byTag, tag, []).push(show);
-                });
-            });
-
-            return byTag;
-        },
-
-        activeShowTypes: state => (state.allShowTypes || []).filter(showType => !showType.archived),
         showTypesByID: state =>
             Object.fromEntries((state.allShowTypes || []).map(showType => [showType.type, showType])),
         showTypesBySlug: state =>
             Object.fromEntries((state.allShowTypes || []).map(showType => [showType.slug || showType.type, showType])),
+
+        showsWithTickets: state => state.shows.filter(show => Boolean(show.tickets)),
+
+        filteredShows() {
+            let shows = this.shows;
+
+            if (utils.isEmpty(this.filter)) {
+                return shows;
+            }
+
+            let filterFuncs = {
+                from: val => show => show.date >= val,
+                to: val => show => show.date <= val,
+                city: val => show => show.venue?.city == val,
+                show_types: val => show => val.includes(show.type),
+                tickets: _val => show => Boolean(show.tickets),
+                slug: val => show => (show.metas?.slug || show.id) == val,
+            };
+
+            let filters = Object.entries(this.filter).map(([field, val]) => {
+                return filterFuncs[field](val);
+            });
+
+            shows = shows.filter(show => {
+                for (let filterFunc of filters) {
+                    if (!filterFunc(show)) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+
+            return shows;
+        },
+
+        filteredShowsByType() {
+            // all the shows matching the criteria, grouped by show type
+            let res = {};
+            for (let show of this.filteredShows) {
+                let rec = utils.setDefault(res, show.type, {
+                    details: {...show.metas},
+                    shows: [],
+                });
+                rec.shows.push(show);
+            }
+
+            let byType = {};
+
+            Object.values(res).forEach(({details, shows}) => {
+                let byDate = {};
+                shows.forEach(show => {
+                    byDate[show.date.strftime("%Y-%m-%d")] = show.date;
+                });
+                let dates = utils.sort(Object.values(byDate));
+
+                details.from = dt.datetime(Math.min(...dates));
+                details.to = dt.datetime(Math.max(...dates));
+
+                if (dates.length < 3) {
+                    details.dates = dates.map(ts => utils.humanDate(ts)).join(", ");
+                } else {
+                    let [start, end] = [dates[0], dates[dates.length - 1]];
+                    details.dates = `${start.strftime("%d %b").replace(/^0/, "")} - ${end.strftime("%d %b").replace(/^0/, "")}`;
+                }
+
+                let byTime = {};
+                shows.forEach(show => {
+                    byTime[show.ts.strftime("%H:%M")] = show.ts;
+                });
+                details.times = utils
+                    .sort(Object.values(byTime), ts => ts.time())
+                    .map(ts => ts.strftime("%I:%M%p").toLowerCase().replace(/^(0)/, ""));
+
+                byType[details.type] = {details, shows};
+            });
+
+            return byType;
+        },
     },
 
     actions: {
+        setFilter(filter) {
+            let filterParsers = {
+                from: field => utils.parseTS((filter[field] || "").split(" ")[0]),
+                to: field => utils.parseTS((filter[field] || "").split(" ")[0]),
+                tickets: field => Boolean(filter[field]),
+                default: field => filter[field],
+            };
+
+            let res = {};
+            for (let field of ["from", "to", "city", "show_types", "tickets", "slug"]) {
+                if (!utils.isEmpty(filter[field])) {
+                    res[field] = (filterParsers[field] || filterParsers.default)(field);
+                }
+            }
+            this.filter = res;
+        },
+
         async fetchShows() {
             if (!this.loading) {
                 return;
@@ -139,11 +184,9 @@ export const useStore = defineStore("shows", {
                     });
                     shows = utils.sort(shows, rec => rec.ts);
                     this.shows = shows;
-                    this.showsWithTickets = shows.filter(show => show.tickets);
                 })
                 .catch(e => {
                     this.shows = [];
-                    this.showsWithTickets = [];
                     this.allShowTypes = [];
                     console.error("Failed to resolve preloaded data:", e);
                 })

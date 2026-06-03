@@ -2,7 +2,6 @@
     import dt from "py-datetime";
 
     import utils from "@/utils.js";
-    import {Sieve} from "@/sieve.js";
     import {useStore} from "@/shows.js";
     import {useRoute} from "vue-router";
 
@@ -40,67 +39,16 @@
                 return px;
             },
 
-            metas: state => state.store.showTypesBySlug[state.slug] || {},
+            shows: state => state.store.filteredShows,
+            metas: state => Object.values(state.store.filteredShowsByType)[0].details,
+
             showDescription() {
                 let description = this.metas.description || "";
                 description = description.replace(/\n/g, "<br />");
                 return description;
             },
 
-            showDetails: state => (state.metas?.type ? state.store.showsByShowType[state.metas?.type] || {} : {}),
-
-            showsSieve() {
-                let shows = this.showDetails.shows || [];
-                let serialized = shows.map(show => {
-                    return {
-                        id: show.id,
-                        city: show.venue.city,
-                        venue: show.venue.name,
-                        acts: show.acts.map(act => act.name),
-                        ts: show.ts.strftime("%A %B %d %Y %H:%M").split(" "),
-                        ts_str: show.ts.strftime("%A %b %d %Y %H:%M"),
-                    };
-                });
-                return new Sieve(serialized);
-            },
-            shows() {
-                let shows = this.showDetails.shows || [];
-
-                // node nonsense (window is not defined when generating pages)
-                let windowHandle;
-                try {
-                    windowHandle = window;
-                } catch (error) {
-                    // pass
-                }
-
-                if (windowHandle && windowHandle.location.search) {
-                    let filter = new URLSearchParams(windowHandle.location.search).get("festival");
-                    if (filter) {
-                        let ids = this.showsSieve.filter(filter);
-                        shows = shows.filter(show => ids.includes(show.id));
-                    }
-                }
-
-                return shows;
-            },
             topShow: state => state.shows[0],
-
-            dates() {
-                let byDate = {};
-                this.shows.forEach(show => {
-                    byDate[show.ts.strftime("%Y-%m-%d")] = show.ts;
-                });
-
-                let dates = utils.sort(Object.values(byDate));
-                if (dates.length < 3) {
-                    return dates.map(ts => utils.humanDate(ts)).join(", ");
-                } else {
-                    let [start, end] = [dates[0], dates[dates.length - 1]];
-                    return `${utils.humanDate(start)}-${utils.humanDate(end)}`;
-                }
-            },
-
             upcomingShows() {
                 return this.shows.filter(show => show.ts > this.now);
             },
@@ -132,21 +80,33 @@
                 },
                 {threshold: 1}
             );
+
+            this.store.setFilter({
+                from: this.route.query.from,
+                to: this.route.query.to,
+                city: this.route.query.festival,
+                slug: this.route.params.slug[0],
+            });
             await this.store.fetchShows();
 
             await this.$nextTick();
-
             if (this.standard) {
                 this.headerObserver.observe(this.$refs.metaHeader);
             }
 
             document.addEventListener("scroll", this.updateScrollPos);
 
-            if (document.location.hash) {
-                let elem = document.getElementById(document.location.hash.slice(1));
+            if (this.route.hash) {
+                let elem = document.getElementById(this.route.hash.slice(1));
                 if (elem) {
                     elem.scrollIntoView({block: "start", inline: "nearest", behavior: "smooth"});
                 }
+            }
+        },
+
+        beforeUnmount() {
+            if (this.headerObserver) {
+                this.headerObserver.disconnect();
             }
         },
     };
@@ -163,8 +123,11 @@
 
         <template v-if="standard">
             <template v-if="!loading">
-                <Showcase :blok="{showcase_shows: [showDetails.type]}" />
-                <Section :blok="{colour: 'base', swoosh: true, align: 'center', contents: []}" style="margin-top: -15px">
+                <Showcase :blok="{showcase_shows: [metas.type]}" />
+                <Section
+                    :blok="{colour: 'base', swoosh: true, align: 'center', contents: []}"
+                    style="margin-top: -15px"
+                >
                     <section class="title" ref="metaHeader">
                         <main>
                             <div class="partnership" v-if="metas.partnership">
@@ -179,7 +142,7 @@
                             <div class="location" :class="{'not-ready': loading || !topShow}">
                                 <div>
                                     <Icon name="calendar_month" />
-                                    <div v-if="!loading">{{ dates }}</div>
+                                    <div v-if="!loading">{{ metas.dates }}</div>
                                 </div>
                             </div>
 
@@ -204,7 +167,7 @@
                             </div>
                         </button>
 
-                        <a :href="topShow?.tickets" target="blank" v-else>
+                        <a :href="metas?.tickets" target="blank" v-else>
                             <div class="button-inner">
                                 <template v-if="!metas.cta">
                                     <Icon name="local_activity" />

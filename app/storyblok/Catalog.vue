@@ -14,71 +14,37 @@
             };
         },
         computed: {
-            dateFrom: state => utils.parseTS((state.blok.date_from || "").split(" ")[0]),
-            dateTo: state => utils.parseTS((state.blok.date_to || "").split(" ")[0]),
-            city: state => state.blok.city || "",
-            showTypesFilter: state => state.blok.show_types,
             showTypes: state => state.store.showTypesByID,
-            shows() {
-                // by default only display shows that have ticket URLs
-                let shows = this.blok.show_unticketed ? this.store.shows : this.store.showsWithTickets;
 
-                let filters = {
-                    dateFrom: show => show.date >= this.dateFrom,
-                    dateTo: show => show.date <= this.dateTo,
-                    city: show => show.venue?.city == this.city,
-                    showTypesFilter: show => this.showTypesFilter.includes(show.type),
-                };
-
-                Object.entries(filters).forEach(([field, filter]) => {
-                    if (!utils.isEmpty(this[field])) {
-                        shows = shows.filter(filter);
+            filterIfPresent() {
+                let filters = [];
+                for (let field of ["from", "to", "city"]) {
+                    if (this.blok[field]) {
+                        filters.push(`${field.replace("city", "festival")}=${this.blok[field]}`);
                     }
-                });
-
-                // shows = shows.filter(show =>
-                return shows;
-            },
-
-            filterIfPresent: state => "",
-
-            byShowType() {
-                // all the shows matching the criteria, grouped by show type
-                let res = {};
-                for (let show of this.shows) {
-                    let rec = utils.setDefault(res, show.type, {details: {...this.showTypes[show.type]}, shows: []});
-                    rec.shows.push(show);
                 }
 
-                res = utils.sort(Object.values(res), rec => rec.details.name);
+                return utils.isEmpty(filters) ? "" : `?${filters.join("&")}`;
+            },
 
-                res.forEach(({details, shows}) => {
-                    details.from = dt.datetime(Math.min(shows.map(show => show.date)));
-                    details.to = dt.datetime(Math.max(shows.map(show => show.date)));
+            shows: state => state.store.filteredShows,
 
-                    let byDate = {};
-                    shows.forEach(show => {
-                        byDate[show.date.strftime("%Y-%m-%d")] = show.date;
-                    });
-                    let dates = utils.sort(Object.values(byDate));
-                    if (dates.length < 3) {
-                        details.dates = dates.map(ts => utils.humanDate(ts)).join(", ");
-                    } else {
-                        let [start, end] = [dates[0], dates[dates.length - 1]];
-                        details.dates = `${start.strftime("%d %b")} - ${end.strftime("%d %b")}`;
-                    }
-
-                    let byTime = {};
-                    shows.forEach(show => {
-                        byTime[show.ts.strftime("%H:%M")] = show.ts;
-                    });
-                    details.times = utils.sort(Object.values(byTime), ts => ts.time()).map(ts => ts.strftime("%H:%M"));
-                });
+            sortedShowTypes() {
+                let byType = this.store.filteredShowsByType;
+                let res = utils.sort(Object.values(byType), rec => rec.details.name);
                 return res;
             },
         },
 
         mounted() {
+            let blok = this.blok || {};
+            this.store.setFilter({
+                from: blok.date_from,
+                to: blok.date_to,
+                city: blok.city,
+                show_types: blok.show_types,
+                tickets: !blok.show_unticketed,
+            });
             this.store.fetchShows();
         },
     };
@@ -87,8 +53,12 @@
 <template>
     <div class="show-catalog" v-editable="blok">
         <div class="shows">
-            <template v-for="{details, shows} in byShowType" :key="details.type">
-                <NuxtLink class="show-type-tile" :class="(details.tags || [])[0]" :href="`/${details.slug}${filterIfPresent}`">
+            <template v-for="{details} in sortedShowTypes" :key="details.type">
+                <NuxtLink
+                    class="show-type-tile"
+                    :class="(details.tags || [])[0]"
+                    :href="`/${details.slug}${filterIfPresent}`"
+                >
                     <div class="cover-image" v-if="details.coverThumb">
                         <img :src="details.coverThumb" />
                     </div>
@@ -101,13 +71,11 @@
                             <div v-for="tag in details.tags.slice(0, 1)" :class="tag">{{ tag }}</div>
                         </div>
                         <div class="dates">
-                            <Icon name="calendar_month" />
                             <div>
                                 {{ details.dates }}
                             </div>
                         </div>
                         <div class="times">
-                            <Icon name="schedule" />
                             <div>
                                 {{ details.times.join(", ") }}
                             </div>
@@ -122,10 +90,16 @@
 <style lang="css">
     .show-catalog {
         padding: 50px;
+        --grid-min-item-size: 16rem;
 
         .shows {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+
+            grid-template-columns: repeat(
+                var(--grid-placement, auto-fill),
+                minmax(var(--grid-min-item-size, 14rem), 1fr)
+            );
+
             gap: 1em;
         }
 
@@ -143,7 +117,7 @@
             flex-direction: column;
             text-align: left;
             overflow: hidden;
-            width: 300px;
+            width: 100%;
             font-size: 0.85em;
 
             --tile-padding: 25px;
@@ -183,6 +157,8 @@
             .meta {
                 padding: 0 var(--tile-padding);
                 padding-bottom: var(--tile-padding);
+                display: grid;
+                gap: 5px;
             }
 
             .dates,
