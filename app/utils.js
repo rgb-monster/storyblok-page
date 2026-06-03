@@ -425,7 +425,7 @@ let utils = {
     },
 
     isEmpty(obj) {
-        return !obj || Object.keys(obj).length == 0;
+        return !obj || (typeof obj != "boolean" && Object.keys(obj).length == 0);
     },
 
     humanNumber(val) {
