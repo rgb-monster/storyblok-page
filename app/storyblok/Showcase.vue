@@ -11,10 +11,14 @@
             blok: Object,
         },
         data() {
+            let [h, s, l] = chroma("yellow").hsl();
+            s = s * 10;
+            l = l * 50;
+
             return {
                 store: useStore(),
                 beamColor: "yellow",
-                wallColor: [],
+                wallColor: [h, s, l],
                 outerJags: 0,
                 currentItemIdx: 0,
                 resizeObserver: null,
@@ -53,7 +57,7 @@
             },
 
             currentItem: state => (state.showcaseItems || [])[state.currentItemIdx],
-            single: state => state.showcaseItems.length == 1,
+            single: state => (state.blok.showcase_shows || []).length + (state.blok.include_video ? 1 : 0) == 1,
         },
 
         methods: {
@@ -79,12 +83,11 @@
             },
         },
 
-        async mounted() {
+        mounted() {
             this.updateColor(this.beamColor);
             this.resizeObserver = new ResizeObserver(this.onResize);
             this.resizeObserver.observe(document.body);
             this.onResize();
-
             this.store.fetchShows();
         },
 
