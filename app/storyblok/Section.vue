@@ -8,6 +8,7 @@
         <div class="bottom-swoosh" v-if="blok.swoosh" />
         <div class="container" :style="{'text-align': blok.align}">
             <StoryblokComponent v-for="currentBlok in blok.contents" :key="currentBlok._uid" :blok="currentBlok" />
+            <slot />
         </div>
     </section>
 </template>
@@ -21,6 +22,11 @@
 
         &.swoosh {
             min-height: 0em;
+        }
+
+        &.base {
+            --background: var(--base);
+            --foreground: var(--dark);
         }
 
         &.pink {
