@@ -115,6 +115,10 @@ section {
         background-color: var(--brown);
     }
 
+    &.base {
+        background-color: var(--base);
+    }
+
     &.beige {
         background-color: var(--beige);
     }

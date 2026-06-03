@@ -61,6 +61,22 @@
             --foreground: var(--light);
         }
 
+        a {
+            font-weight: 600;
+            padding: 2px 5px;
+            border: 2px solid var(--foreground);
+            border-radius: 5px;
+
+            transition:
+                background 200ms ease,
+                color 200ms ease;
+
+            &:hover {
+                background: var(--foreground);
+                color: var(--background);
+            }
+        }
+
         .top-swoosh {
             position: absolute;
             left: 0;
