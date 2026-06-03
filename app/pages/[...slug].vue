@@ -1,4 +1,5 @@
 <script setup>
+    import {computed} from "vue";
     import showTypeTitlesStatic from "~/show-types-titles.json";
     import showTypeSlugsStatic from "~/show-types-generated.json";
 
@@ -21,9 +22,7 @@
             api: {
                 version: import.meta.dev ? "draft" : "published",
             },
-            bridge: {},
         }));
-        story = story.value || {};
     }
 
     // Set page title dynamically (completely synchronously on both server and client!)
@@ -33,8 +32,8 @@
         if (title) {
             pageTitle = `${title} | ${pageTitle}`;
         }
-    } else if (story && story.name && story.name.toLowerCase() !== "home") {
-        pageTitle = `${story.name} | ${pageTitle}`;
+    } else if (story?.value && story.value.name && story.value.name.toLowerCase() !== "home") {
+        pageTitle = `${story.value.name} | ${pageTitle}`;
     }
 
     useHead({
