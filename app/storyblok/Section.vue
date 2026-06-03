@@ -64,8 +64,8 @@
         a {
             font-weight: 600;
             padding: 2px 5px;
-            border: 2px solid var(--foreground);
-            border-radius: 5px;
+            background: var(--accent-yellow);
+            color: var(--dark);
 
             transition:
                 background 200ms ease,
@@ -116,6 +116,12 @@
 
         &.no-swoosh .container {
             padding: 20px 0;
+        }
+
+        .richtext-block {
+            padding: 2em 5em;
+            max-width: 50em;
+            margin: 0 auto;
         }
     }
 </style>
