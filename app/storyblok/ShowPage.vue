@@ -6,7 +6,14 @@
     import {useStore} from "@/shows.js";
     import {useRoute} from "vue-router";
 
+    import Showcase from "./Showcase.vue";
+    import Section from "./Section.vue";
+
     export default {
+        components: {
+            Showcase,
+            Section,
+        },
         props: {
             blok: Object,
         },
@@ -147,11 +154,6 @@
 
 <template>
     <main v-editable="blok" class="show-page" :class="theme" v-if="!loading">
-        <template v-if="curtains">
-            <img class="curtains-left" src="/curtains-left.webp" :class="{hidden: pushAway < -5}" />
-            <img class="curtains-right" src="/curtains-right.webp" :class="{hidden: pushAway < -5}" />
-        </template>
-
         <div class="sticky-header" ref="header">
             <div class="contents">
                 <img class="square-logo" v-if="metas.square" :src="metas.square" />
@@ -161,31 +163,32 @@
 
         <template v-if="standard">
             <template v-if="!loading">
-                <component is="showpage-banner" :show-details="showDetails" />
-
-                <section class="title" ref="metaHeader">
-                    <main>
-                        <div class="partnership" v-if="metas.partnership">
-                            Presented in partnership with <mark>{{ metas.partnership }}</mark>
-                        </div>
-                        <h1 v-html="metas.title" />
-                    </main>
-                </section>
-
-                <section class="meta">
-                    <main>
-                        <div class="location" :class="{'not-ready': loading || !topShow}">
-                            <div>
-                                <Icon name="calendar_month" />
-                                <div v-if="!loading">{{ dates }}</div>
+                <Showcase :blok="{showcase_shows: [showDetails.type]}" />
+                <Section :blok="{colour: 'base', swoosh: true, align: 'center', contents: []}" style="margin-top: -15px">
+                    <section class="title" ref="metaHeader">
+                        <main>
+                            <div class="partnership" v-if="metas.partnership">
+                                Presented in partnership with <mark>{{ metas.partnership }}</mark>
                             </div>
-                        </div>
+                            <h1 v-html="metas.title" />
+                        </main>
+                    </section>
 
-                        <div class="tags">
-                            <div v-for="(tag, idx) in metas.tags" :key="idx" :class="tag.tag">{{ tag.tag }}</div>
-                        </div>
-                    </main>
-                </section>
+                    <section class="meta">
+                        <main>
+                            <div class="location" :class="{'not-ready': loading || !topShow}">
+                                <div>
+                                    <Icon name="calendar_month" />
+                                    <div v-if="!loading">{{ dates }}</div>
+                                </div>
+                            </div>
+
+                            <div class="tags">
+                                <div v-for="(tag, idx) in metas.tags" :key="idx" :class="tag.tag">{{ tag.tag }}</div>
+                            </div>
+                        </main>
+                    </section>
+                </Section>
 
                 <section class="cta">
                     <main :class="{'not-ready': loading || !topShow}">
@@ -262,32 +265,6 @@
             position: absolute;
             opacity: 0;
             pointer-events: none;
-        }
-
-        .curtains-left,
-        .curtains-right {
-            position: fixed;
-            top: 0;
-            z-index: 2000;
-            pointer-events: none;
-            width: min(400px, 19.5vw);
-            transition:
-                left 500ms ease,
-                right 500ms ease;
-        }
-
-        .curtains-left {
-            left: 0;
-            &.hidden {
-                left: -500px;
-            }
-        }
-
-        .curtains-right {
-            right: 0;
-            &.hidden {
-                right: -500px;
-            }
         }
 
         .sticky-header {
