@@ -4,8 +4,6 @@
 
 <template>
     <section class="toplevel" :class="[blok.colour, blok.swoosh ? 'swoosh' : 'no-swoosh']" v-editable="blok">
-        <div class="top-swoosh" v-if="blok.swoosh" />
-        <div class="bottom-swoosh" v-if="blok.swoosh" />
         <div class="container" :style="{'text-align': blok.align}">
             <StoryblokComponent v-for="currentBlok in blok.contents" :key="currentBlok._uid" :blok="currentBlok" />
             <slot />
@@ -18,10 +16,41 @@
         color: var(--section-fg);
         background-color: var(--section-bg);
         position: relative;
-        padding: 20px;
 
         &.swoosh {
             min-height: 0em;
+
+            &::before {
+                /* top swoosh */
+                content: "";
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 0;
+                height: 1em; /* Same height as before */
+                transform: translateY(-80%);
+                background: var(--section-bg);
+                mask-image: url(/new/ink-swipe-top.webp);
+                mask-size: cover;
+                mask-position: center;
+                z-index: 1; /* Make sure it's on top of previous section's content */
+            }
+
+            &::after {
+                /* bottom swoosh */
+                content: "";
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                height: 1.25em; /* Same height as before */
+                transform: translateY(30%);
+                background: var(--section-bg);
+                mask-image: url(/new/ink-swipe-bottom.webp);
+                mask-size: cover;
+                mask-position: center;
+                z-index: 10;
+            }
         }
 
         &.base {
@@ -73,7 +102,7 @@
 
         a {
             font-weight: 600;
-            padding: 2px 5px;
+            padding: 0.1em 0.3em;
             background: var(--accent-yellow);
             color: var(--dark);
 
@@ -87,50 +116,22 @@
             }
         }
 
-        .top-swoosh {
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: -20px;
-            background: var(--section-bg);
-            mask-image: url(/new/ink-swipe-top.webp);
-            mask-size: cover;
-            mask-position: center;
-            font-family: var(--header-font);
-            padding: 0.7em;
-            text-align: center;
-            text-transform: uppercase;
-            height: 30px;
-        }
-
-        .bottom-swoosh {
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: -10px;
-            background: var(--section-bg);
-            mask-image: url(/new/ink-swipe-bottom.webp);
-            mask-size: cover;
-            mask-position: center;
-            font-family: var(--header-font);
-            padding: 0.7em;
-            text-align: center;
-            text-transform: uppercase;
-            height: 30px;
-            z-index: 10;
-        }
-
         .container {
-            padding-top: 10px;
+            padding: 0.625em 1.25em;
+        }
+
+        &.swoosh .container {
+            padding-top: 1.5em;
+            padding-bottom: 1.5em;
         }
 
         &.no-swoosh .container {
-            padding: 20px 0;
+            padding: 1.25em;
         }
 
         .richtext-block {
-            padding: 2em 5em;
-            max-width: 50em;
+            max-width: 45em;
+            padding: 1em 0;
             margin: 0 auto;
         }
     }

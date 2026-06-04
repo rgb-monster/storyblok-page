@@ -11,7 +11,7 @@
 <style lang="css">
     h1.ink-header {
         position: relative;
-        font-size: var(--h2-sizing);
+        font-size: var(--font-size-3xl);
         width: 100%;
         color: var(--foreground);
     }

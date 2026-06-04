@@ -73,7 +73,7 @@
         align-items: center;
         justify-content: center;
         user-select: none;
-        font-size: 1.2em;
+        font-size: var(--font-size-lg);
         font-weight: 600;
         color: var(--base-6);
         opacity: 1;

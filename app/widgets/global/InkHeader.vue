@@ -21,7 +21,7 @@
 <style lang="css">
     .ink-header-container {
         position: relative;
-        font-size: var(--h2-sizing);
+        font-size: var(--font-size-3xl);
         height: min(3.5em, 12vw);
         width: 100%;
 

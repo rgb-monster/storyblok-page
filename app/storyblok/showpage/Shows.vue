@@ -231,7 +231,7 @@
 
         .late-night-disclaimer {
             color: var(--accent-pink);
-            font-size: 0.85em;
+            font-size: var(--font-size-sm);
         }
 
         .lineup {
@@ -290,7 +290,7 @@
                 margin-top: 10px;
                 .act-name {
                     font-weight: 600;
-                    font-size: 1.2em;
+                    font-size: var(--font-size-lg);
                 }
 
                 .bio {
@@ -335,7 +335,7 @@
 
         .time {
             font-weight: 600;
-            font-size: 2em;
+            font-size: var(--font-size-3xl);
         }
 
         .action {

@@ -41,7 +41,7 @@
         }
 
         h2 {
-            font-size: 1.5em;
+            font-size: var(--font-size-2xl);
             margin-top: 2em;
         }
     }

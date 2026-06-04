@@ -222,7 +222,7 @@
 
             .site-dropdown {
                 .toggle {
-                    padding: var(--content-horiz-padding);
+                    padding: 1.25em;
                 }
             }
 
@@ -235,12 +235,12 @@
                 justify-content: center;
                 align-items: center;
                 gap: 15px;
-                padding: 10px var(--content-horiz-padding);
+                padding: 10px 1.25em;
             }
 
             h1 {
                 color: #fff;
-                font-size: min(6vw, 2em);
+                font-size: var(--font-size-3xl);
                 margin-top: 4px; /* manually pushed the header down for visual vertical alignment */
             }
 
@@ -291,7 +291,7 @@
             .location {
                 font-family: var(--rgb-font);
                 color: #999;
-                font-size: 1.25em;
+                font-size: var(--font-size-xl);
                 font-weight: 400;
                 margin-top: 1em;
 
@@ -316,7 +316,7 @@
                 }
 
                 .icon {
-                    font-size: 1.25em;
+                    font-size: var(--font-size-xl);
                     display: flex;
                 }
             }
@@ -324,7 +324,7 @@
             .tags {
                 font-family: var(--rgb-font);
                 color: var(--accent-pink);
-                font-size: 1.25em;
+                font-size: var(--font-size-xl);
                 font-weight: 400;
                 margin-top: 1em;
 
@@ -368,7 +368,7 @@
             button,
             a {
                 background: var(--accent-burgundy);
-                font-size: min(1.25em, 5vw);
+                font-size: var(--font-size-xl);
                 border-radius: 15px;
                 font-weight: 600;
                 color: var(--accent-burgundy);
@@ -388,8 +388,7 @@
                 margin-bottom: 3px;
 
                 .icon {
-                    font-size: 2em;
-                    font-size: min(2em, 10vw);
+                    font-size: var(--font-size-3xl);
                 }
 
                 &:active {
@@ -402,12 +401,12 @@
 
         section.show-description {
             line-height: 1.8;
-            font-size: 1.25em;
+            font-size: var(--font-size-xl);
         }
 
         p {
             line-height: 180%;
-            font-size: 1.25em;
+            font-size: var(--font-size-xl);
         }
 
         @media (min-width: 1000px) {
@@ -449,7 +448,7 @@
                 .location {
                     display: grid;
                     justify-items: center;
-                    font-size: 1em;
+                    font-size: var(--font-size-base);
                     gap: 0.25em;
 
                     & > div {
@@ -458,7 +457,7 @@
                 }
 
                 .tags {
-                    font-size: 1em;
+                    font-size: var(--font-size-base);
                 }
             }
         }

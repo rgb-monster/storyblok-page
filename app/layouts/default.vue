@@ -5,35 +5,36 @@
 </script>
 <template>
     <slot></slot>
-    <footer v-if="!store.loading">
-        <div class="top-swoosh" />
+    <footer v-if="!store.loading" class="swoosh">
         <div class="container">&copy; {{ currentYear }} RGB Monster</div>
     </footer>
 </template>
 
 <style lang="css">
-    footer {
+    footer.swoosh {
         position: relative;
         background: var(--dark);
         color: var(--light);
-        padding: 20px;
         text-align: center;
         font-family: var(--header-font);
         text-transform: uppercase;
 
-        .top-swoosh {
+        .container {
+            padding: 1.25em;
+        }
+
+        &::before {
+            content: '';
             position: absolute;
             left: 0;
             right: 0;
-            top: -10px;
+            top: 0;
+            height: 1em;
+            transform: translateY(-50%);
             background: var(--dark);
             mask-image: url(/new/ink-swipe-top.webp);
             mask-size: cover;
             mask-position: center;
-            padding: 0.7em;
-            text-align: center;
-            text-transform: uppercase;
-            height: 30px;
             z-index: 20;
         }
     }

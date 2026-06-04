@@ -72,7 +72,7 @@
             /* the padding here is bit wonky - it has been tweaked so that input, filtered dropdown and buttons
             are all the same height */
             padding: 4.5px 20px;
-            font-size: 0.75em;
+            font-size: var(--font-size-xs);
             text-transform: uppercase;
             font-weight: 600;
             display: flex;
@@ -173,7 +173,7 @@
                 padding: 5px;
                 border-radius: 50%;
                 border: 1px dashed transparent;
-                font-size: 1em;
+                font-size: var(--font-size-base);
             }
 
             &:hover {

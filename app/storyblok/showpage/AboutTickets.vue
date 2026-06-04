@@ -71,7 +71,7 @@
 
 <style lang="css">
     .about-tickets {
-        font-size: 1.25em;
+        font-size: var(--font-size-xl);
         line-height: 180%;
         padding-top: 3em;
 
@@ -106,7 +106,7 @@
 
         .box header {
             color: var(--chrome-x2);
-            font-size: 1.25em;
+            font-size: var(--font-size-xl);
             margin-bottom: 15px;
         }
     }

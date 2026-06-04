@@ -89,8 +89,8 @@
 
 <style lang="css">
     .show-catalog {
-        padding: 50px;
-        --grid-min-item-size: 16rem;
+        padding: 2em;
+        --grid-min-item-size: 14rem;
 
         .shows {
             display: grid;
@@ -99,11 +99,14 @@
                 var(--grid-placement, auto-fill),
                 minmax(var(--grid-min-item-size, 14rem), 1fr)
             );
+            justify-items: center;
 
             gap: 1em;
         }
 
         .show-type-tile {
+            max-width: 23em;
+
             border-radius: 8px;
             background: var(--light);
             transition:
@@ -118,9 +121,9 @@
             text-align: left;
             overflow: hidden;
             width: 100%;
-            font-size: 0.85em;
+            font-size: var(--font-size-sm);
 
-            --tile-padding: 25px;
+            --tile-padding: 1.5rem;
 
             & > * {
                 pointer-events: none;
@@ -143,9 +146,9 @@
             }
 
             header {
-                font-size: 1.25em;
+                font-size: var(--font-size-xl);
                 font-weight: 600;
-                padding: 25px;
+                padding: var(--tile-padding);
                 margin: 0;
                 padding-bottom: 5px;
             }
@@ -168,7 +171,7 @@
                 gap: 5px;
 
                 .icon {
-                    font-size: 1.25em;
+                    font-size: var(--font-size-xl);
                 }
             }
 
@@ -176,7 +179,7 @@
                 display: flex;
                 flex-wrap: wrap;
                 gap: 5px;
-                padding: 5px 0;
+                padding: 0.3em 0;
 
                 & > div {
                     font-weight: 600;
@@ -193,6 +196,28 @@
                     &.unique {
                         color: var(--accent-red);
                     }
+                }
+            }
+        }
+
+        @media (max-width: 550px) {
+            padding: 1em;
+            --grid-min-item-size: 14rem;
+
+            .shows {
+                gap: 2em 10px;
+            }
+
+            .show-type-tile {
+                margin: 0 auto;
+
+                header {
+                    padding: 10px 15px;
+                }
+
+                .description,
+                .meta {
+                    padding: 10px 15px;
                 }
             }
         }

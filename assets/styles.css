@@ -1,4 +1,15 @@
 :root {
+    --font-size-xs: clamp(0.75rem, 1vw, 0.875rem);
+    --font-size-sm: clamp(0.875rem, 1.25vw, 1rem);
+    --font-size-base: clamp(1rem, 1.5vw, 1.125rem);
+    --font-size-lg: clamp(1.125rem, 2vw, 1.25rem);
+    --font-size-xl: clamp(1.25rem, 2.5vw, 1.5rem);
+    --font-size-2xl: clamp(1.5rem, 3vw, 1.875rem);
+    --font-size-3xl: clamp(1.875rem, 4vw, 2.25rem);
+    --font-size-4xl: clamp(2.25rem, 5vw, 3rem);
+    --font-size-5xl: clamp(3rem, 6vw, 4rem);
+    --font-size-6xl: clamp(4rem, 7vw, 5rem);
+
     --pink: #ed7dab;
     --blue: #4e639c;
     --brown: #7d3a43;
@@ -33,7 +44,6 @@
     --em: #ed7dab;
 
     --chrome-text: #f7f0e3;
-    --content-horiz-padding: 20px;
 
     --base: hsl(39, 56%, 93%);
     --base-1: hsl(39, 56%, 88%);
@@ -54,14 +64,11 @@
     --header-color: var(--accent-burgundy);
 
     --transparent-shadow: rgba(0, 0, 0, 0.4);
-
-    --h1-sizing: min(2.5em, 10vw);
-    --h2-sizing: min(2em, 7vw);
 }
 
 body {
     font-family: var(--body-font);
-    font-size: min(1.2em, 4vw);
+    font-size: var(--font-size-base);
 }
 
 h1,
@@ -69,28 +76,30 @@ h2 {
     font-family: var(--header-font);
     text-transform: uppercase;
     font-weight: 400;
+    line-height: 1;
+    transform: translateY(-0.1em);
 }
 
 h1 {
-    font-size: var(--h1-sizing);
+    font-size: var(--font-size-4xl);
     color: var(--header-color);
     font-family: var(--header-font);
     font-weight: 600;
 
     .ink-header-contents {
         color: var(--header-color);
-        font-size: min(2.4em, 6vw);
+        font-size: var(--font-size-3xl);
         text-transform: uppercase;
         text-align: center;
         letter-spacing: 0.025em;
-        line-height: 90%;
         --dynamic-shadow: min(calc(1px + 0.3vw), 3px);
         text-shadow: var(--dynamic-shadow) var(--dynamic-shadow) rgba(0, 0, 0, 0.4);
+        transform: translateY(0.05em);
     }
 }
 
 h2 {
-    font-size: var(--h2-sizing);
+    font-size: var(--font-size-3xl);
 }
 
 section {
@@ -100,7 +109,7 @@ section {
         margin: 0 auto;
 
         padding: 0 1em;
-        padding-bottom: 50px;
+        padding-bottom: 3em;
     }
 }
 
@@ -260,7 +269,7 @@ a.disabled {
     font-family: "Material Icons";
     font-weight: normal;
     font-style: normal;
-    font-size: 24px; /* Preferred icon size */
+    font-size: var(--font-size-2xl); /* Preferred icon size */
     display: inline-block;
     line-height: 1;
     text-transform: none;

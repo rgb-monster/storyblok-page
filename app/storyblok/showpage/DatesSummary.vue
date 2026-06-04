@@ -26,7 +26,7 @@
         main {
             font-family: var(--rgb-font);
             color: #999;
-            font-size: 1.25em;
+            font-size: var(--font-size-xl);
             font-weight: 600;
             margin-top: 1em;
             display: flex;
