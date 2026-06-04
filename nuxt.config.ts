@@ -22,7 +22,13 @@ export default defineNuxtConfig({
     },
 
     // Global CSS/SCSS files
-    css: ["../assets/destyle.css", "../assets/styles.css"],
+    css: [
+        "@fontsource/hammersmith-one/index.css",
+        "@fontsource/lato/400.css",
+        "@fontsource/lato/700.css",
+        "../assets/destyle.css",
+        "../assets/styles.css",
+    ],
 
     postcss: {
         plugins: {
