@@ -3,7 +3,7 @@
 </script>
 
 <template>
-    <section class="toplevel" :class="[blok.colour, blok.swoosh ? 'swoosh' : 'no-swoosh']" v-editable="blok">
+    <section class="toplevel" :class="[`theme-${blok.colour}`, blok.swoosh ? 'swoosh' : 'no-swoosh']" v-editable="blok">
         <div class="container" :style="{'text-align': blok.align}">
             <StoryblokComponent v-for="currentBlok in blok.contents" :key="currentBlok._uid" :blok="currentBlok" />
             <slot />
@@ -13,8 +13,8 @@
 
 <style lang="css">
     section.toplevel {
-        color: var(--section-fg);
-        background-color: var(--section-bg);
+        color: var(--color);
+        background-color: var(--bg);
         position: relative;
 
         &.swoosh {
@@ -29,7 +29,7 @@
                 top: 0;
                 height: 1em; /* Same height as before */
                 transform: translateY(-80%);
-                background: var(--section-bg);
+                background: var(--bg);
                 mask-image: url(/new/ink-swipe-top.webp);
                 mask-size: cover;
                 mask-position: center;
@@ -45,59 +45,12 @@
                 bottom: 0;
                 height: 1.25em; /* Same height as before */
                 transform: translateY(30%);
-                background: var(--section-bg);
+                background: var(--bg);
                 mask-image: url(/new/ink-swipe-bottom.webp);
                 mask-size: cover;
                 mask-position: center;
                 z-index: 10;
             }
-        }
-
-        &.base {
-            --section-bg: var(--page-bg);
-            --section-fg: var(--page-fg);
-        }
-
-        &.white {
-            --section-bg: white;
-            --section-fg: dark;
-        }
-
-        &.pink {
-            --section-fg: var(--beige);
-            --section-bg: var(--pink);
-        }
-
-        &.blue {
-            --section-bg: var(--blue);
-            --section-fg: var(--beige);
-        }
-        &.brown {
-            --section-bg: var(--brown);
-            --section-fg: var(--beige);
-        }
-        &.beige {
-            --section-bg: var(--beige);
-            --section-fg: var(--dark);
-        }
-        &.yellow {
-            --section-bg: var(--yellow);
-            --section-fg: var(--dark);
-        }
-
-        &.light {
-            --section-bg: var(--light);
-            --section-fg: var(--dark);
-        }
-
-        &.dark {
-            --section-bg: var(--dark);
-            --section-fg: var(--light);
-        }
-
-        &.with-confetti {
-            background-image: url(/new/confetti.svg);
-            background-size: 30%;
         }
 
         a {
@@ -112,7 +65,7 @@
 
             &:hover {
                 background: var(--section-fg);
-                color: var(--section-bg);
+                color: var(--bg);
             }
         }
 

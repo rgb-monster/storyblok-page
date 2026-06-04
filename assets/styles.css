@@ -303,8 +303,8 @@ body {
     & > main {
         flex-grow: 1;
         width: 100%;
-        background-color: var(--page-bg);
-        color: var(--page-fg);
+        background-color: var(--bg);
+        color: var(--color);
 
         --accent-bg: var(--accent-yellow);
         --accent-fg: var(--dark);
@@ -315,54 +315,56 @@ body {
             background: var(--accent-bg);
             padding: 0.1em 0.15em;
         }
+    }
 
-        &.pink {
-            --page-fg: var(--light);
-            --page-bg: var(--pink);
-        }
+    .theme-base {
+        --bg: var(--base);
+        --color: var(--page-fg);
+    }
 
-        &.blue {
-            --page-bg: var(--blue);
-            --page-fg: var(--beige);
-            --accent-bg: var(--accent-pink);
-            --accent-fg: var(--light);
-        }
+    .theme-white {
+        --bg: white;
+        --color: dark;
+    }
 
-        &.brown {
-            --page-bg: var(--brown);
-            --page-fg: var(--beige);
-        }
+    .theme-pink {
+        --color: var(--beige);
+        --bg: var(--pink);
+        --header-color: var(--light);
+    }
 
-        &.beige {
-            --page-bg: #f7f0e3;
-            --page-fg: var(--dark);
-        }
+    .theme-blue {
+        --bg: var(--blue);
+        --color: var(--beige);
+        --header-color: var(--light);
+    }
+    .theme-brown {
+        --bg: var(--brown);
+        --color: var(--beige);
+        --header-color: var(--light);
+    }
+    .theme-beige {
+        --bg: var(--beige);
+        --color: var(--dark);
+    }
+    .theme-yellow {
+        --bg: var(--yellow);
+        --color: var(--dark);
+    }
 
-        &.yellow {
-            --page-bg: var(--yellow);
-            --page-fg: var(--dark);
-            --accent-fg: var(--yellow);
-            --accent-bg: var(--dark);
-        }
+    .theme-light {
+        --bg: var(--light);
+        --color: var(--dark);
+    }
 
-        &.light {
-            --page-bg: var(--light);
-            --page-fg: var(--dark);
-        }
+    .theme-dark {
+        --bg: var(--dark);
+        --color: var(--light);
+        --header-color: var(--light);
+    }
 
-        &.dark {
-            --page-bg: var(--dark);
-            --page-fg: var(--light);
-        }
-
-        &.white {
-            --page-bg: white;
-            --page-fg: var(--dark);
-        }
-
-        &.base {
-            --page-bg: var(--base);
-            --page-fg: var(--base-text);
-        }
+    .with-confetti {
+        background-image: url(/new/confetti.svg);
+        background-size: 30%;
     }
 }
