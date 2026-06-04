@@ -101,7 +101,12 @@
 <template>
     <component :is="'style'" v-if="!loading && styleOverrides" v-text="styleOverrides" />
 
-    <main v-editable="blok" class="show-page" :class="[`theme-${blok.colour}`, `page-${slug}`]" v-if="!loading">
+    <main
+        v-editable="blok"
+        class="show-page"
+        :class="[`theme-${blok.colour || 'base'}`, `page-${slug}`]"
+        v-if="!loading"
+    >
         <div class="sticky-header" ref="header">
             <div class="contents">
                 <img class="square-logo" v-if="metas.square" :src="metas.square" />
