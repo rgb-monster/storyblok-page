@@ -20,7 +20,11 @@
                 let filters = [];
                 for (let field of ["from", "to", "city"]) {
                     if (this.blok[field]) {
-                        filters.push(`${field.replace("city", "festival")}=${this.blok[field]}`);
+                        let val = this.blok[field];
+                        if (field == "from" || field == "to") {
+                            val = val.split(" ")[0];
+                        }
+                        filters.push(`${field.replace("city", "festival")}=${val}`);
                     }
                 }
 
