@@ -46,6 +46,9 @@
             upcomingShows() {
                 return this.shows.filter(show => show.ts > this.now);
             },
+
+            styleOverrides: state =>
+                state.blok.style_overrides ? `.page-${state.slug} { ${state.blok.style_overrides || ""} }` : null,
         },
 
         methods: {
@@ -96,7 +99,9 @@
 </script>
 
 <template>
-    <main v-editable="blok" class="show-page" :class="theme" v-if="!loading">
+    <component :is="'style'" v-if="!loading && styleOverrides" v-text="styleOverrides" />
+
+    <main v-editable="blok" class="show-page" :class="[theme, `page-${slug}`]" v-if="!loading">
         <div class="sticky-header" ref="header">
             <div class="contents">
                 <img class="square-logo" v-if="metas.square" :src="metas.square" />
