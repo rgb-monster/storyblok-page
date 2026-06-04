@@ -1,16 +1,17 @@
 <script>
-    export default {
-        name: "QuotesCarousel",
-        props: {
-            // these are optional props for if your button has a linkable state
-            quotes: Array,
-        },
+    import {useStore} from "@/shows.js";
 
+    export default {
         data() {
             return {
+                store: useStore(),
                 current: 0,
                 nextTime: null,
             };
+        },
+        computed: {
+            metas: state => state.store.currentMetas || {},
+            quotes: state => state.metas.quotes,
         },
 
         methods: {
@@ -23,13 +24,6 @@
                 if (this.current % 2 == 1) {
                     setTimeout(() => this.proceed(), 700);
                 }
-
-                // -- in case i want a carousel after-all
-                // let quote = this.$refs.container[this.current];
-                // let carousel = this.$refs.carousel;
-                // let x = quote.getBoundingClientRect().x - this.$refs.inner.getBoundingClientRect().x;
-                // carousel.style.scrollBehavior = this.current == 0 ? "auto" : "smooth";
-                // carousel.scrollTo(x, 0);
             },
         },
 
@@ -44,8 +38,8 @@
 </script>
 
 <template>
-    <div class="quotes-carousel" ref="carousel">
-        <div class="inner" ref="inner">
+    <section class="quotes-carousel" v-if="metas.quotes">
+        <main>
             <div
                 class="quote-container"
                 ref="container"
@@ -62,8 +56,8 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </main>
+    </section>
 </template>
 
 <style lang="css">

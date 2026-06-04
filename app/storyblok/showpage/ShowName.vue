@@ -2,6 +2,10 @@
     import {useStore} from "@/shows.js";
 
     export default {
+        props: {
+            blok: Object,
+        },
+
         data() {
             return {
                 store: useStore(),
@@ -14,23 +18,14 @@
 </script>
 
 <template>
-    <section class="banner">
+    <section class="show-name">
         <main>
-            <img :src="metas.coverImage" />
+            <h1>{{ blok?.title || metas.title }}</h1>
         </main>
     </section>
 </template>
 
 <style lang="css">
-    .banner {
-        padding: 20px 0;
-        main {
-            max-width: var(--within-curtains);
-            padding-bottom: 0;
-
-            img {
-                border-radius: 15px;
-            }
-        }
+    .show-name {
     }
 </style>

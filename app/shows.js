@@ -99,6 +99,10 @@ export const useStore = defineStore("shows", {
 
             return byType;
         },
+
+        currentDetails: state => (state.filter.slug ? Object.values(state.filteredShowsByType)[0] : null),
+        currentShows: state => state.currentDetails?.shows,
+        currentMetas: state => state.currentDetails?.details,
     },
 
     actions: {

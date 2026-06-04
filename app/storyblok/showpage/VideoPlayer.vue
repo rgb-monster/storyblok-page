@@ -1,36 +1,38 @@
 <script>
-    import { useShowPageComposable } from "@/show-page-composable.js";
-    import { ref } from "vue";
+    import {useStore} from "@/shows.js";
 
     export default {
-        props: {
-            showDetails: Object,
-        },
-        setup(props) {
-            const { show } = useShowPageComposable(props);
-
-            const videoPlaying = ref(false);
-            const video = ref(null);
-
-            const togglePlayback = () => {
-                if (video.value.paused) {
-                    video.value.play();
-                } else {
-                    video.value.pause();
-                }
+        data() {
+            return {
+                store: useStore(),
+                videoPlaying: false,
             };
+        },
+        computed: {
+            metas: state => state.store.currentMetas,
+        },
 
-            return { show, videoPlaying, video, togglePlayback };
+        methods: {
+            togglePlayback() {
+                let video = this.$refs.video;
+                if (video.paused) {
+                    video.play();
+                    this.videoPlaying = true;
+                } else {
+                    video.pause();
+                    this.videoPlaying = false;
+                }
+            },
         },
     };
 </script>
 
 <template>
-    <section class="show-page-video" v-if="show.squareVideo">
+    <section class="show-page-video" v-if="metas.squareVideo">
         <main>
             <button class="player" :class="{playing: videoPlaying}" @click="togglePlayback">
                 <video playsinline ref="video" @play="videoPlaying = true" @pause="videoPlaying = false">
-                    <source :src="show.squareVideo" type="video/mp4" />
+                    <source :src="metas.squareVideo" type="video/mp4" />
                 </video>
                 <div class="play-controls">
                     <div class="play-icon"><Icon name="play_arrow" /></div>

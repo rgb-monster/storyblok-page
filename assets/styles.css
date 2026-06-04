@@ -102,35 +102,6 @@ section {
         padding: 0 1em;
         padding-bottom: 50px;
     }
-
-    &.pink {
-        background-color: var(--pink);
-    }
-
-    &.blue {
-        background-color: var(--blue);
-    }
-
-    &.brown {
-        background-color: var(--brown);
-    }
-
-    &.base {
-        background-color: var(--base);
-    }
-
-    &.beige {
-        background-color: var(--beige);
-    }
-
-    &.yellow {
-        background-color: var(--yellow);
-    }
-
-    &.with-confetti {
-        background-image: url(/new/confetti.svg);
-        background-size: 30%;
-    }
 }
 
 em {
@@ -323,8 +294,8 @@ body {
     & > main {
         flex-grow: 1;
         width: 100%;
-        background: var(--background);
-        color: var(--foreground);
+        background-color: var(--page-bg);
+        color: var(--page-fg);
 
         --accent-bg: var(--accent-yellow);
         --accent-fg: var(--dark);
@@ -337,42 +308,52 @@ body {
         }
 
         &.pink {
-            --foreground: var(--light);
-            --background: var(--pink);
+            --page-fg: var(--light);
+            --page-bg: var(--pink);
         }
 
         &.blue {
-            --background: var(--blue);
-            --foreground: var(--beige);
+            --page-bg: var(--blue);
+            --page-fg: var(--beige);
             --accent-bg: var(--accent-pink);
             --accent-fg: var(--light);
         }
 
         &.brown {
-            --background: var(--brown);
-            --foreground: var(--beige);
+            --page-bg: var(--brown);
+            --page-fg: var(--beige);
         }
 
         &.beige {
-            --background: #f7f0e3;
-            --foreground: var(--dark);
+            --page-bg: #f7f0e3;
+            --page-fg: var(--dark);
         }
 
         &.yellow {
-            --background: var(--yellow);
-            --foreground: var(--dark);
+            --page-bg: var(--yellow);
+            --page-fg: var(--dark);
             --accent-fg: var(--yellow);
             --accent-bg: var(--dark);
         }
 
         &.light {
-            --background: var(--light);
-            --foreground: var(--dark);
+            --page-bg: var(--light);
+            --page-fg: var(--dark);
         }
 
         &.dark {
-            --background: var(--dark);
-            --foreground: var(--light);
+            --page-bg: var(--dark);
+            --page-fg: var(--light);
+        }
+
+        &.white {
+            --page-bg: white;
+            --page-fg: var(--dark);
+        }
+
+        &.base {
+            --page-bg: var(--base);
+            --page-fg: var(--base-text);
         }
     }
 }

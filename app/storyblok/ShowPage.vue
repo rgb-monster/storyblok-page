@@ -42,31 +42,14 @@
             shows: state => state.store.filteredShows,
             metas: state => Object.values(state.store.filteredShowsByType)[0].details,
 
-            showDescription() {
-                let description = this.metas.description || "";
-                description = description.replace(/\n/g, "<br />");
-                return description;
-            },
-
             topShow: state => state.shows[0],
             upcomingShows() {
                 return this.shows.filter(show => show.ts > this.now);
             },
-
-            showsByDate() {
-                let byDate = {};
-                this.upcomingShows.forEach(show => {
-                    utils
-                        .setDefault(byDate, show.date.strftime("%Y-%m-%d"), {date: show.date, ts: show.ts, shows: []})
-                        .shows.push(show);
-                });
-
-                return utils.sort(Object.values(byDate), date => date.date);
-            },
         },
 
         methods: {
-            updateScrollPos(evt) {
+            updateScrollPos() {
                 this.scrollY = window.scrollY;
             },
         },
@@ -181,28 +164,15 @@
                     </main>
                 </section>
 
-                <section class="show-description">
-                    <main v-html="showDescription" />
-                </section>
+                <component is="showpage-show-description" />
 
                 <component is="showpage-video-player" />
 
-                <section class="social-proof" v-if="metas.quotes">
-                    <main>
-                        <component is="showpage-quotes-carousel" :quotes="metas.quotes" />
-                    </main>
-                </section>
+                <component is="showpage-quotes-carousel" />
 
                 <template v-if="!loading && upcomingShows.length > 1">
                     <component is="showpage-about-tickets" />
-
-                    <section class="dates" ref="dates">
-                        <main>
-                            <h2>Upcoming Shows</h2>
-
-                            <component is="showpage-shows" :showsByDate="showsByDate" :metas="metas" />
-                        </main>
-                    </section>
+                    <component is="showpage-shows" />
                 </template>
             </template>
         </template>

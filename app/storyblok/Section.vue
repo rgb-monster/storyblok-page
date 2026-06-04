@@ -15,8 +15,8 @@
 
 <style lang="css">
     section.toplevel {
-        color: var(--foreground);
-        background: var(--background);
+        color: var(--section-fg);
+        background-color: var(--section-bg);
         position: relative;
         padding: 20px;
 
@@ -25,40 +25,50 @@
         }
 
         &.base {
-            --background: var(--base);
-            --foreground: var(--dark);
+            --section-bg: var(--page-bg);
+            --section-fg: var(--page-fg);
+        }
+
+        &.white {
+            --section-bg: white;
+            --section-fg: dark;
         }
 
         &.pink {
-            --foreground: var(--beige);
-            --background: var(--pink);
+            --section-fg: var(--beige);
+            --section-bg: var(--pink);
         }
 
         &.blue {
-            --background: var(--blue);
-            --foreground: var(--beige);
+            --section-bg: var(--blue);
+            --section-fg: var(--beige);
         }
         &.brown {
-            --background: var(--brown);
-            --foreground: var(--beige);
+            --section-bg: var(--brown);
+            --section-fg: var(--beige);
         }
         &.beige {
-            --background: var(--beige);
-            --foreground: var(--dark);
+            --section-bg: var(--beige);
+            --section-fg: var(--dark);
         }
         &.yellow {
-            --background: var(--yellow);
-            --foreground: var(--dark);
+            --section-bg: var(--yellow);
+            --section-fg: var(--dark);
         }
 
         &.light {
-            --background: var(--light);
-            --foreground: var(--dark);
+            --section-bg: var(--light);
+            --section-fg: var(--dark);
         }
 
         &.dark {
-            --background: var(--dark);
-            --foreground: var(--light);
+            --section-bg: var(--dark);
+            --section-fg: var(--light);
+        }
+
+        &.with-confetti {
+            background-image: url(/new/confetti.svg);
+            background-size: 30%;
         }
 
         a {
@@ -72,8 +82,8 @@
                 color 200ms ease;
 
             &:hover {
-                background: var(--foreground);
-                color: var(--background);
+                background: var(--section-fg);
+                color: var(--section-bg);
             }
         }
 
@@ -82,7 +92,7 @@
             left: 0;
             right: 0;
             top: -20px;
-            background: var(--background);
+            background: var(--section-bg);
             mask-image: url(/new/ink-swipe-top.webp);
             mask-size: cover;
             mask-position: center;
@@ -98,7 +108,7 @@
             left: 0;
             right: 0;
             bottom: -10px;
-            background: var(--background);
+            background: var(--section-bg);
             mask-image: url(/new/ink-swipe-bottom.webp);
             mask-size: cover;
             mask-position: center;

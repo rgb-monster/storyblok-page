@@ -9,28 +9,22 @@
         },
         computed: {
             metas: state => state.store.currentMetas,
+            showDescription() {
+                let description = this.metas.description || "";
+                description = description.replace(/\n/g, "<br />");
+                return description;
+            },
         },
     };
 </script>
 
 <template>
-    <section class="banner">
-        <main>
-            <img :src="metas.coverImage" />
-        </main>
+    <section class="show-description">
+        <main v-html="showDescription" />
     </section>
 </template>
 
 <style lang="css">
-    .banner {
-        padding: 20px 0;
-        main {
-            max-width: var(--within-curtains);
-            padding-bottom: 0;
-
-            img {
-                border-radius: 15px;
-            }
-        }
+    .show-description {
     }
 </style>

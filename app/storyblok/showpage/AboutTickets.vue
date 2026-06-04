@@ -1,19 +1,15 @@
 <script>
-    import Icon from "@/widgets/global/Icon.vue";
-    import { useShowPageComposable } from "@/show-page-composable.js";
+    import {useStore} from "@/shows.js";
 
     export default {
-        components: {
-            Icon,
-        },
-        props: {
-            showDetails: Object,
-        },
-        setup(props) {
-            const { show } = useShowPageComposable(props);
-            return { show };
+        data() {
+            return {
+                store: useStore(),
+            };
         },
         computed: {
+            metas: state => state.store.currentMetas,
+
             paymentSectionTitle() {
                 const titles = {
                     ticketed: "Ticketed Show",
@@ -21,7 +17,7 @@
                     pwyc: "Pay What You Can",
                     unticketed: "Unticketed Show",
                 };
-                return titles[this.show.payment || "ticketed"];
+                return titles[this.metas.payment || "ticketed"];
             },
         },
     };
@@ -34,15 +30,15 @@
                 <img class="monster" src="/doodles/sticking-out.webp" />
             </div>
 
-            <div class="box" v-if="show.payment != 'hide'">
+            <div class="box" v-if="metas.payment != 'hide'">
                 <header class="flexer"><Icon name="confirmation_number" />{{ paymentSectionTitle }}</header>
 
-                <div v-if="(show.payment || 'ticketed') == 'ticketed'">
+                <div v-if="(metas.payment || 'ticketed') == 'ticketed'">
                     This is a ticketed show. This means that unlike some other shows that we produce where you may
                     nominate a price you can afford, you may only enter this show with a ticket.
                 </div>
 
-                <div v-if="show.payment == 'ticketed+pwyw'">
+                <div v-if="metas.payment == 'ticketed+pwyw'">
                     This is a ticketed show. This means that the only way to guarantee entry is with a ticket. If you
                     are low income, unwaged, or you can't afford a full price ticket for any reason, you are welcome to
                     buy a concession ticket on a trust basis. If there is spare capacity once the ticket holders have
@@ -51,7 +47,7 @@
                     show.
                 </div>
 
-                <div v-if="show.payment == 'pwyc'">
+                <div v-if="metas.payment == 'pwyc'">
                     This is a Pay What You Can Show. There are two ways of paying for the show. You can either reserve a
                     ticket in advance for the full price, or select a reduced price option if that's all you can afford.
                     Or, providing there is spare capacity once we've let the ticket holders in, you can turn up to the
@@ -59,7 +55,7 @@
                     doing this during the mid-week performances where we are less likely to sell out.
                 </div>
 
-                <div v-if="show.payment == 'unticketed'">
+                <div v-if="metas.payment == 'unticketed'">
                     This is a free show! This means that there is no way of reserving your place in advance. Instead, to
                     be fair to everyone, we let people in the venue on a first come, first served basis, so we recommend
                     turning up around fifteen minutes before the show starts. We ask that you pay what you feel the show
