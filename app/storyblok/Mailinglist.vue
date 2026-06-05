@@ -1,5 +1,6 @@
 <script>
     import requests from "~/requests.js";
+    import {renderRichText} from "@storyblok/vue";
 
     export default {
         props: {
@@ -15,6 +16,7 @@
         computed: {
             tag: state => state.blok?.tag || "newsletter",
             listName: state => (state.tag == "newsletter" ? null : utils.capitalise(state.tag)),
+            richText: state => (state.blok.body ? renderRichText(state.blok.body) : null),
         },
         methods: {
             async subscribeToMailingList() {
@@ -39,13 +41,13 @@
 </script>
 
 <template>
-    <section class="mailinglist-form">
+    <div class="mailinglist-form">
         <main v-if="!subscribed">
             <div style="line-height: 150%">
                 <template v-if="!blok.form_only">
                     <h1 style="margin: 1em auto">{{ blok.title || "Stay in the loop" }}</h1>
 
-                    <div v-if="blok.body" v-html="blok.body" />
+                    <div v-if="richText" v-html="richText" />
                     <template v-else>
                         We produce lots of different comedy shows, and send occasional emails with ticket offers, show
                         recommendations, and insider tips.
@@ -70,7 +72,7 @@
                     />
                     <div style="display: flex; justify-content: center">
                         <button :disabled="!emailOk(email) || submitting" class="big-button">
-                            {{ !submitting ? "Subscribe" : "Subscribing&hellip;" }}
+                            {{ !submitting ? blok.subscribe_cta || "Subscribe" : "Subscribing&hellip;" }}
                         </button>
                     </div>
                 </form>
@@ -92,7 +94,7 @@
                 </div>
             </slot>
         </main>
-    </section>
+    </div>
 </template>
 
 <style lang="css">
