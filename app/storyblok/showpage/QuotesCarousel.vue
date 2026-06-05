@@ -11,7 +11,7 @@
         },
         computed: {
             metas: state => state.store.currentMetas || {},
-            quotes: state => state.metas.quotes,
+            quotes: state => state.metas.quotes || [],
         },
 
         methods: {

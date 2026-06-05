@@ -77,7 +77,7 @@
         methods: {
             redirectToMostRecent(show) {
                 this.show = show;
-                window.history.replaceState(null, null, `${window.location.origin}/thanks?id=${this.show.id}`);
+                window.history.replaceState(null, null, `${window.location.origin}/thanks/?id=${this.show.id}`);
             },
         },
 
