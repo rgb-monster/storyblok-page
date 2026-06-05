@@ -29,18 +29,21 @@
     }
 
     // Set page title dynamically (completely synchronously on both server and client!)
-    let pageTitle = "RGB Monster - An Unusual Comedy Production";
+    let pageTitle;
     if (isShowTypePage) {
         let title = showTypeTitlesStatic[slugStr];
         if (title) {
-            pageTitle = title + " | " + pageTitle;
+            pageTitle = title + " - RGB Monster";
         }
     } else if (story?.value && story.value.name && story.value.name.toLowerCase() != "home") {
-        pageTitle = story.value.name + " | " + pageTitle;
+        pageTitle = story.value.name + " - RGB Monster";
+    } else {
+        pageTitle = `RGB Monster - An Unusual Comedy Production`;
     }
 
     // Resolve description and sharing image for social cards dynamically
-    let pageDescription = "RGB Monster is an unusual comedy production. Live comedy, interactive shows, and spectacular events.";
+    let pageDescription =
+        "RGB Monster is an unusual comedy production. Live comedy, interactive shows, and spectacular events.";
     let pageImage = "https://rgb.monster/new/monstervision.webp";
     let showTypeMetadata = import.meta.dev ? config.public.showTypeMetadata : showTypeMetadataStatic;
 
@@ -80,9 +83,7 @@
             {name: "twitter:description", content: pageDescription},
             {name: "twitter:image", content: pageImage},
         ],
-        link: [
-            {rel: "canonical", href: pageUrl}
-        ]
+        link: [{rel: "canonical", href: pageUrl}],
     });
 
     let mockBlok = {
