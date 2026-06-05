@@ -11,6 +11,7 @@ export default defineNuxtConfig({
         public: {
             // Only populated dynamically in dev mode via the prerender module
             showTypeSlugs: [],
+            showTypeMetadata: {},
         },
     },
 

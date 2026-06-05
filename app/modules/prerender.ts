@@ -80,6 +80,40 @@ async function getShowTypeTitlesMap() {
     return titlesMap;
 }
 
+// Process and return show type metadata mapping (for SEO)
+async function getShowTypeMetadataMap() {
+    let showTypes = await getShowTypes();
+    let metadataMap = Object.fromEntries(
+        showTypes
+            .map((showType: any) => {
+                let slug = showType.meta?.slug || showType.id;
+                let meta = showType.meta || {};
+                // Strip HTML tags from description if present
+                let cleanDescription = "";
+                if (meta.description) {
+                    cleanDescription = meta.description.replace(/<[^>]*>/g, "");
+                }
+                let cleanShortDescription = "";
+                if (meta.shortDescription) {
+                    cleanShortDescription = meta.shortDescription.replace(/<[^>]*>/g, "");
+                }
+                let desc = cleanShortDescription || cleanDescription || "";
+                let coverImg = meta.coverImage || "";
+                let title = meta.title || showType.name || "";
+                return [
+                    slug,
+                    {
+                        title: title,
+                        description: desc,
+                        coverImage: coverImg,
+                    }
+                ];
+            })
+            .filter(([slug]) => slug)
+    );
+    return metadataMap;
+}
+
 export default defineNuxtModule({
     meta: {
         name: "prerender",
@@ -88,18 +122,22 @@ export default defineNuxtModule({
         // Handle show type generation and title mapping
         const slugs = await getShowTypeSlugs();
         const titlesMap = await getShowTypeTitlesMap();
+        let metadataMap = await getShowTypeMetadataMap();
         
         const slugsFilePath = path.resolve(nuxt.options.rootDir, "app/show-types-generated.json");
         const titlesFilePath = path.resolve(nuxt.options.rootDir, "app/show-types-titles.json");
+        let metadataFilePath = path.resolve(nuxt.options.rootDir, "app/show-types-metadata.json");
         
         await fs.writeFile(slugsFilePath, JSON.stringify(slugs, null, 2));
         await fs.writeFile(titlesFilePath, JSON.stringify(titlesMap, null, 2));
+        await fs.writeFile(metadataFilePath, JSON.stringify(metadataMap, null, 2));
 
         if (nuxt.options.dev) {
             nuxt.options.runtimeConfig.public.showTypeSlugs = slugs;
-            console.log(`[Prerender Module] Loaded ${slugs.length} show type slugs and titles map for dev mode.`);
+            nuxt.options.runtimeConfig.public.showTypeMetadata = metadataMap;
+            console.log(`[Prerender Module] Loaded ${slugs.length} show type slugs and titles/metadata map for dev mode.`);
         } else {
-            console.log(`[Prerender Module] Successfully saved ${slugs.length} show type slugs to ${slugsFilePath} and titles map to ${titlesFilePath}`);
+            console.log(`[Prerender Module] Successfully saved ${slugs.length} show type slugs to ${slugsFilePath}, titles map to ${titlesFilePath}, and metadata map to ${metadataFilePath}`);
         }
 
         // Handle prerendering routes
