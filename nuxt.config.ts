@@ -45,6 +45,10 @@ export default defineNuxtConfig({
 
     app: {
         head: {
+            meta: [
+                {property: "og:site_name", content: "RGB Monster"},
+                {property: "og:type", content: "website"},
+            ],
             link: [
                 {
                     href: "https://fonts.googleapis.com/icon?family=Material+Icons",
@@ -63,6 +67,28 @@ window.__PRELOADED_DATA__ = {
     .catch(() => [])
 };
                     `,
+                },
+                {
+                    src: "https://plausible.io/js/script.tagged-events.outbound-links.js",
+                    "data-domain": "rgb.monster",
+                    defer: "defer",
+                },
+                {
+                    src: "https://fast.bentonow.com?site_uuid=f89c78149bd78558e888710d5dba78c6",
+                    defer: "defer",
+                    async: "async",
+                },
+                {
+                    innerHTML: `!function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '9489847254392109');
+        fbq('track', 'PageView');`,
                 },
             ],
         },
