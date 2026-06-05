@@ -511,6 +511,25 @@ let utils = {
         }
         return date;
     },
+
+    isRichTextEmpty(richText) {
+        // 1. Check if it's null, undefined, or an empty string
+        if (!richText) return true;
+
+        // 2. Check if the root content array is missing or empty
+        if (!richText.content || richText.content.length === 0) return true;
+
+        // 3. Check for the standard empty editor state: a single paragraph with no inner content
+        if (
+            richText.content.length === 1 &&
+            richText.content[0].type === "paragraph" &&
+            (!richText.content[0].content || richText.content[0].content.length === 0)
+        ) {
+            return true;
+        }
+
+        return false;
+    },
 };
 
 utils.filters = Object.fromEntries(
