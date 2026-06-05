@@ -1,6 +1,4 @@
 <script>
-    import dt from "py-datetime";
-
     import {useStore} from "@/shows.js";
     import utils from "@/utils.js";
 

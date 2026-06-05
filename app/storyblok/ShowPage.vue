@@ -103,7 +103,7 @@
 
     <main
         v-editable="blok"
-        class="show-page"
+        class="show-page page"
         :class="[`theme-${blok.colour || 'base'}`, `page-${slug}`]"
         v-if="!loading"
     >
