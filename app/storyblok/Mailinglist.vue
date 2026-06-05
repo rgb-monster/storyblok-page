@@ -16,7 +16,8 @@
         computed: {
             tag: state => state.blok?.tag || "newsletter",
             listName: state => (state.tag == "newsletter" ? null : utils.capitalise(state.tag)),
-            richText: state => (state.blok.body ? renderRichText(state.blok.body) : null),
+            introRich: state => (state.blok.intro_block ? renderRichText(state.blok.intro_block) : null),
+            thanksRich: state => (state.blok.thanks_block ? renderRichText(state.blok.thanks_block) : null),
         },
         methods: {
             async subscribeToMailingList() {
@@ -45,20 +46,21 @@
         <main v-if="!subscribed">
             <div style="line-height: 150%">
                 <template v-if="!blok.form_only">
-                    <h1 style="margin: 1em auto">{{ blok.title || "Stay in the loop" }}</h1>
-
-                    <div v-if="richText" v-html="richText" />
+                    <div v-html="introRich" v-if="introRich" />
                     <template v-else>
-                        We produce lots of different comedy shows, and send occasional emails with ticket offers, show
-                        recommendations, and insider tips.
-                        <template v-if="listName">
-                            Subscribe to our
-                            <em>no-spam {{ listName }} comedy mailing list </em> and don't miss a show!
-                        </template>
-                        <template v-else>
-                            Subscribe to our
-                            <em>no-spam comedy mailing list </em> and don't miss a show!
-                        </template>
+                        <h1 style="margin: 1em auto">{{ blok.title || "Stay in the loop" }}</h1>
+                        <div>
+                            We produce lots of different comedy shows, and send occasional emails with ticket offers,
+                            show recommendations, and insider tips.
+                            <template v-if="listName">
+                                Subscribe to our
+                                <em>no-spam {{ listName }} comedy mailing list </em> and don't miss a show!
+                            </template>
+                            <template v-else>
+                                Subscribe to our
+                                <em>no-spam comedy mailing list </em> and don't miss a show!
+                            </template>
+                        </div>
                     </template>
                 </template>
 
@@ -81,17 +83,21 @@
 
         <main v-else>
             <slot name="thanks">
-                <h1 style="margin-top: 1em; margin-bottom: 0.5em">You're in</h1>
-                <div style="text-align: center; line-height: 150%">
-                    Thank you for subscribing! If you're looking for a good laugh on the go, we also have an Instagram
-                    page with lots of comedy clips!
+                <div v-html="thanksRich" v-if="thanksRich" />
+                <template v-else>
+                    <h1 style="margin-top: 1em; margin-bottom: 0.5em">You're in</h1>
 
-                    <div style="display: flex; justify-content: center">
-                        <a class="big-button" href="https://www.instagram.com/rgbmonster" target="_blank">
-                            See Instagram
-                        </a>
+                    <div style="text-align: center; line-height: 150%">
+                        Thank you for subscribing! If you're looking for a good laugh on the go, we also have an
+                        Instagram page with lots of comedy clips!
+
+                        <div style="display: flex; justify-content: center">
+                            <a class="big-button" href="https://www.instagram.com/rgbmonster" target="_blank">
+                                See Instagram
+                            </a>
+                        </div>
                     </div>
-                </div>
+                </template>
             </slot>
         </main>
     </div>
