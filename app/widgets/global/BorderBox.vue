@@ -26,6 +26,7 @@
         data() {
             return {
                 seed: 0,
+                resizeObserver: null,
             };
         },
 
@@ -191,7 +192,9 @@
         },
 
         beforeUnmount() {
-            this.resizeObserver.disconnect();
+            if (this.resizeObserver) {
+                this.resizeObserver.disconnect();
+            }
             document.documentElement.style.removeProperty(`--jagged-mask-${this.seed}`);
         },
     };
