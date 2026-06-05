@@ -43,22 +43,6 @@
                     this.activeAct = act;
                 }
             },
-            humanDate(date) {
-                // Assuming this is globally available or will be provided.
-                // A simple implementation for now.
-                if (typeof date?.strftime !== "function") return "";
-                return date.strftime("%b %d");
-            },
-            ordinal(n) {
-                // Assuming this is globally available or will be provided.
-                const s = ["th", "st", "nd", "rd"];
-                const v = n % 100;
-                return n + (s[(v - 20) % 10] || s[v] || s[0]);
-            },
-            pluralizeNoun(count, singular, plural) {
-                // Assuming this is globally available or will be provided.
-                return count === 1 ? singular : plural;
-            },
         },
     };
 </script>
@@ -78,7 +62,7 @@
                 </a>
                 <div class="shows">
                     <template v-for="show in date.shows">
-                        <a class="show-tile" :href="show.tickets" target="blank" v-if="!metas.show_lineup">
+                        <a class="show-tile" :href="show.tickets" target="blank" v-if="!metas.showLineup">
                             <div class="time">
                                 {{ show.ts.strftime("%H:%M") }}
 
@@ -115,7 +99,7 @@
                             </div>
                         </a>
 
-                        <div class="show-tile" v-if="metas.show_lineup">
+                        <div class="show-tile" v-if="metas.showLineup || metas.showHosts">
                             <div class="time">
                                 {{ show.ts.strftime("%H:%M") }}
 
@@ -144,10 +128,10 @@
                                 <template v-else-if="show.tickets_available == 0"> Sold out </template>
                             </div>
 
-                            <div class="lineup" v-if="metas.show_lineup">
+                            <div class="lineup" v-if="metas.showHosts">
                                 <div class="headshots">
                                     <template v-if="show.acts.length > show.total_act_spots / 2">
-                                        <template v-if="metas.show_hosts">
+                                        <template v-if="metas.showHosts">
                                             <button
                                                 v-for="(act, idx) in show.hosts"
                                                 :key="idx"
