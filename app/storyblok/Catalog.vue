@@ -34,6 +34,15 @@
             sortedShowTypes() {
                 let byType = this.store.filteredShowsByType;
                 let res = utils.sort(Object.values(byType), rec => rec.details.name);
+
+                if (!utils.isEmpty(this.blok.show_types)) {
+                    res = res.filter(rec => this.blok.show_types.includes(rec.details.type));
+                }
+
+                if (!this.blok.show_unticketed) {
+                    res = res.filter(rec => rec.details.tickets);
+                }
+
                 return res;
             },
         },
@@ -44,8 +53,6 @@
                 from: blok.date_from,
                 to: blok.date_to,
                 city: blok.city,
-                show_types: blok.show_types,
-                tickets: !blok.show_unticketed,
             });
             this.store.fetchShows();
         },

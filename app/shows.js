@@ -13,6 +13,7 @@ export const useStore = defineStore("shows", {
             shows: [], // all shows, including those without any ticket data
             allShowTypes: null, // includes archived
             filter: {},
+            currentShowSlug: null,
         };
     },
 
@@ -35,12 +36,12 @@ export const useStore = defineStore("shows", {
                 from: val => show => show.date >= val,
                 to: val => show => show.date <= val,
                 city: val => show => show.venue?.city == val,
-                show_types: val => show => val.includes(show.type),
-                tickets: _val => show => Boolean(show.tickets),
-                slug: val => show => (show.metas?.slug || show.id) == val,
             };
 
             let filters = Object.entries(this.filter).map(([field, val]) => {
+                if (field == "slug") {
+                    return () => true;
+                }
                 return filterFuncs[field](val);
             });
 
@@ -100,7 +101,7 @@ export const useStore = defineStore("shows", {
             return byType;
         },
 
-        currentDetails: state => (state.filter.slug ? Object.values(state.filteredShowsByType)[0] : null),
+        currentDetails: state => state.filteredShowsByType[state.showTypesBySlug[state.currentShowSlug]?.type],
         currentShows: state => state.currentDetails?.shows || [],
         currentMetas: state => state.currentDetails?.details || {},
     },
@@ -110,17 +111,20 @@ export const useStore = defineStore("shows", {
             let filterParsers = {
                 from: field => utils.parseTS((filter[field] || "").split(" ")[0]),
                 to: field => utils.parseTS((filter[field] || "").split(" ")[0]),
-                tickets: field => Boolean(filter[field]),
                 default: field => filter[field],
             };
 
             let res = {};
-            for (let field of ["from", "to", "city", "show_types", "tickets", "slug"]) {
+            for (let field of ["from", "to", "city", "show_types"]) {
                 if (!utils.isEmpty(filter[field])) {
                     res[field] = (filterParsers[field] || filterParsers.default)(field);
                 }
             }
             this.filter = res;
+        },
+
+        setCurrentShow(slug) {
+            this.currentShowSlug = slug;
         },
 
         async fetchShows() {

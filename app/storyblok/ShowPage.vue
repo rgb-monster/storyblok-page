@@ -28,7 +28,7 @@
 
         computed: {
             standard: state => [undefined, true].includes(state.blok.standard_structure),
-            slug: state => (state.route.params.slug && state.route.params.slug[0]) || state.route.path.substring(1),
+            slug: state => state.route.params.slug[0],
             theme: state => state.blok.colour || "beige",
             curtains: state => !state.blok.hide_curtains,
             loading: state => state.store.loading,
@@ -39,9 +39,8 @@
                 return px;
             },
 
-            shows: state => state.store.filteredShows,
-            metas: state => Object.values(state.store.filteredShowsByType)[0].details,
-
+            shows: state => state.store.currentShows,
+            metas: state => state.store.currentMetas,
             topShow: state => state.shows[0],
             upcomingShows() {
                 return this.shows.filter(show => show.ts > this.now);
@@ -71,8 +70,8 @@
                 from: this.route.query.from,
                 to: this.route.query.to,
                 city: this.route.query.festival,
-                slug: this.route.params.slug[0],
             });
+            this.store.setCurrentShow(this.slug);
             await this.store.fetchShows();
 
             await this.$nextTick();
@@ -100,7 +99,6 @@
 
 <template>
     <component :is="'style'" v-if="!loading && styleOverrides" v-text="styleOverrides" />
-
     <main
         v-editable="blok"
         class="show-page page"
