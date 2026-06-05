@@ -252,10 +252,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-
             padding: 2em 0;
+
             img {
                 max-width: min(100%, 600px);
+                border-radius: 40px;
             }
         }
 
@@ -315,9 +316,13 @@
             padding: 2em 0;
         }
 
-        @media (max-width: mixins.$break-mob) {
+        @media (max-width: 620px) {
             .splash {
-                padding-top: 0;
+                padding-top: 1em;
+
+                img {
+                    border-radius: 20px;
+                }
             }
         }
     }
