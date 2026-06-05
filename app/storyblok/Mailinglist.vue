@@ -42,20 +42,23 @@
     <section class="mailinglist-form">
         <main v-if="!subscribed">
             <div style="line-height: 150%">
-                <slot name="prompt">
-                    <h1 style="margin: 1em auto">Stay in the loop</h1>
+                <template v-if="!blok.form_only">
+                    <h1 style="margin: 1em auto">{{ blok.title || "Stay in the loop" }}</h1>
 
-                    We produce lots of different comedy shows, and send occasional emails with ticket offers, show
-                    recommendations, and insider tips.
-                    <template v-if="listName">
-                        Subscribe to our
-                        <em>no-spam {{ listName }} comedy mailing list </em> and don't miss a show!
-                    </template>
+                    <div v-if="blok.body" v-html="blok.body" />
                     <template v-else>
-                        Subscribe to our
-                        <em>no-spam comedy mailing list </em> and don't miss a show!
+                        We produce lots of different comedy shows, and send occasional emails with ticket offers, show
+                        recommendations, and insider tips.
+                        <template v-if="listName">
+                            Subscribe to our
+                            <em>no-spam {{ listName }} comedy mailing list </em> and don't miss a show!
+                        </template>
+                        <template v-else>
+                            Subscribe to our
+                            <em>no-spam comedy mailing list </em> and don't miss a show!
+                        </template>
                     </template>
-                </slot>
+                </template>
 
                 <form @submit.prevent="subscribeToMailingList" class="submit-form">
                     <input
