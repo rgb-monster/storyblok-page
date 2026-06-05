@@ -64,7 +64,7 @@
                 color 200ms ease;
 
             &:hover {
-                background: var(--section-fg);
+                background: var(--color);
                 color: var(--bg);
             }
         }
